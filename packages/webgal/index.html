@@ -82,7 +82,6 @@
       }
     </style>
   </head>
-
   <body>
     <!--快速显示落地页，让用户感知不到加载的过程-->
     <div id="ebg"></div>
@@ -110,7 +109,8 @@
         </div>
       </div>
     </div>
-    <div id="panic-overlay"><!-- 紧急回避 --></div>
+    <!-- 紧急回避 -->
+    <div id="panic-overlay"></div>
     <div id="root"></div>
     <script>
       /**
@@ -238,7 +238,6 @@
           });
       }
     </script>
-    <!--<script type="module" src="/src/Core/util/resize.ts"></script>-->
     <script>
       let enterPromise = new Promise((res) => (window.enterPromise = res));
       let renderPromise = new Promise((res) => (window.renderPromise = res));
