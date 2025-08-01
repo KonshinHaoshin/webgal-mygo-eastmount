@@ -6,19 +6,25 @@ $screenHeight: 1440px;
 @font-face {
   font-family: '思源宋体';
   /*noinspection CssUnknownTarget*/
-  src: url('../assets/fonts/SourceHanSerifCN-Regular.ttf') format('truetype');
+  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'LXGW';
   /*noinspection CssUnknownTarget*/
-  src: url('../assets/fonts/LXGWWenKai-Regular.ttf') format('truetype');
+  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
 }
 
 @font-face {
   font-family: 'WebgalUI';
   /*noinspection CssUnknownTarget*/
-  src: url('../assets/fonts/OPPOSans-R.ttf') format('truetype');
+  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
+}
+
+@font-face {
+  font-family: '江城圆体';
+  /*noinspection CssUnknownTarget*/
+  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
 }
 
 .StartButton {
