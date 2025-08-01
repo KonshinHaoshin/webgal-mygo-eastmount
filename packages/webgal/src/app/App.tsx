@@ -13,7 +13,7 @@ import GlobalDialog from '@/UI/GlobalDialog/GlobalDialog';
 import { PanicOverlay } from '@/UI/PanicOverlay/PanicOverlay';
 import DevPanel from '@/UI/DevPanel/DevPanel';
 import './index.scss';
-import '@/assets/style/animation.scss';
+import './animation.scss';
 import 'modern-css-reset/dist/reset.min.css';
 
 function App() {
