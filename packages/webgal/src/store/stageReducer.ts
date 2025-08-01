@@ -159,7 +159,7 @@ const stageSlice = createSlice({
     removeAllPerform: (state) => {
       state.PerformList.splice(0, state.PerformList.length);
     },
-    removeAllPixiPerforms: (state, action: PayloadAction<undefined>) => {
+    removeAllPixiPerforms: (state, _action: PayloadAction<undefined>) => {
       for (let i = 0; i < state.PerformList.length; i++) {
         const performItem: IRunPerform = state.PerformList[i];
         if (performItem.script.command === commandType.pixi) {

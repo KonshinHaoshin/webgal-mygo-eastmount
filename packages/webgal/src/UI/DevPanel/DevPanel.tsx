@@ -24,7 +24,8 @@ export default function DevPanel() {
   }, []);
   const isShow = isShowDevPanel();
 
-  const { t, i18n } = useTranslation();
+  // const { t, i18n } = useTranslation();
+  const { i18n } = useTranslation();
 
   const devMainArea = (
     <>

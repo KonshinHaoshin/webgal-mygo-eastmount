@@ -20,7 +20,7 @@ const pixiRain = (
   angle: number, // 角度
 ) => {
   const pixiStage = WebGAL.gameplay.pixiStage!;
-  const app = pixiStage.currentApp!;
+  const _app = pixiStage.currentApp!;
 
   const effectsContainer =
     containerType === 'foreground' ? pixiStage.foregroundEffectsContainer : pixiStage.backgroundEffectsContainer;

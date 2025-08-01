@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import loadVersion from 'vite-plugin-package-version';
 import { resolve, relative } from 'path';
-import { visualizer } from 'rollup-plugin-visualizer';
+// import { visualizer } from 'rollup-plugin-visualizer';
 import { readdirSync, watch, writeFileSync } from 'fs';
 import { isEqual } from 'lodash';
 import Info from 'unplugin-info/vite';

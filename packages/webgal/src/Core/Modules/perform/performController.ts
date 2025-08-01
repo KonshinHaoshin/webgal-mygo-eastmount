@@ -1,10 +1,13 @@
 import { IPerform } from '@/Core/Modules/perform/performInterface';
 import { ISentence } from '@/Core/controller/scene/sceneInterface';
 import { webgalStore } from '@/store/store';
-import cloneDeep from 'lodash/cloneDeep';
-import { resetStageState, stageActions } from '@/store/stageReducer';
+// import cloneDeep from 'lodash/cloneDeep';
+import {
+  //  resetStageState,
+  stageActions,
+} from '@/store/stageReducer';
 import { nextSentence } from '@/Core/controller/gamePlay/nextSentence';
-import { IRunPerform } from '@/store/stageInterface';
+// import { IRunPerform } from '@/store/stageInterface';
 import { WEBGAL_NONE } from '@/Core/constants';
 
 /**

@@ -1,9 +1,12 @@
 import { ISentence } from '@/Core/controller/scene/sceneInterface';
 import { logger } from '@/Core/util/logger';
-import { RootState, webgalStore } from '@/store/store';
+import {
+  //  RootState,
+  webgalStore,
+} from '@/store/store';
 import { getSentenceArgByKey } from '@/Core/util/getSentenceArg';
 import { IPerform } from '@/Core/Modules/perform/performInterface';
-import { useSelector } from 'react-redux';
+// import { useSelector } from 'react-redux';
 import { WebGAL } from '@/Core/WebGAL';
 import { WEBGAL_NONE } from '@/Core/constants';
 

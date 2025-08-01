@@ -7,7 +7,10 @@ import { setVisibility } from '@/store/GUIReducer';
 import { logger } from '@/Core/util/logger';
 import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import useTrans from '@/hooks/useTrans';
-import { compileSentence, EnhancedNode } from '@/Stage/TextBox/TextBox';
+import {
+  compileSentence,
+  // EnhancedNode
+} from '@/Stage/TextBox/TextBox';
 import useSoundEffect from '@/hooks/useSoundEffect';
 import { WebGAL } from '@/Core/WebGAL';
 

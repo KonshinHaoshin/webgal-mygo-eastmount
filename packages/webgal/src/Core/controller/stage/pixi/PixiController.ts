@@ -691,17 +691,27 @@ export default class PixiStage {
               overrideBounds = mot.overrideBounds;
             }
             console.log(overrideBounds);
-            const models = await Promise.all([
-              stage.live2DModel.from(jsonPath, {
-                autoInteract: false,
-                overWriteBounds: {
-                  x0: overrideBounds[0],
-                  y0: overrideBounds[1],
-                  x1: overrideBounds[2],
-                  y1: overrideBounds[3],
-                },
-              }),
-            ]);
+            // const models = await Promise.all([
+            //   stage.live2DModel.from(jsonPath, {
+            //     autoInteract: false,
+            //     overWriteBounds: {
+            //       x0: overrideBounds[0],
+            //       y0: overrideBounds[1],
+            //       x1: overrideBounds[2],
+            //       y1: overrideBounds[3],
+            //     },
+            //   }),
+            // ]);
+            const model = await stage.live2DModel.from(jsonPath, {
+              autoInteract: false,
+              overWriteBounds: {
+                x0: overrideBounds[0],
+                y0: overrideBounds[1],
+                x1: overrideBounds[2],
+                y1: overrideBounds[3],
+              },
+            });
+            const models = [model];
 
             models.forEach((model) => {
               const scaleX = stageWidth / model.width;

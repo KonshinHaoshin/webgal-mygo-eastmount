@@ -21,7 +21,7 @@ const pixiSnow = (
   angle: number, // 角度
 ) => {
   const pixiStage = WebGAL.gameplay.pixiStage!;
-  const app = pixiStage.currentApp!;
+  const __app = pixiStage.currentApp!;
 
   const effectsContainer =
     containerType === 'foreground' ? pixiStage.foregroundEffectsContainer : pixiStage.backgroundEffectsContainer;

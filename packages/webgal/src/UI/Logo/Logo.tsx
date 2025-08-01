@@ -1,4 +1,8 @@
-import { FC, useEffect, useRef } from 'react';
+import {
+  FC,
+  useEffect,
+  // useRef
+} from 'react';
 import styles from './logo.module.scss';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';

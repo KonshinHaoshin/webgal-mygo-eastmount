@@ -1,23 +1,24 @@
 @charset "UTF-8";
 
-@import "Core/util/constants";
+$screenWidth: 2560px;
+$screenHeight: 1440px;
 
 @font-face {
-  font-family: "思源宋体";
+  font-family: '思源宋体';
   /*noinspection CssUnknownTarget*/
-  src: url("assets/fonts/SourceHanSerifCN-Regular.ttf") format("truetype");
+  src: url('../assets/fonts/SourceHanSerifCN-Regular.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "LXGW";
+  font-family: 'LXGW';
   /*noinspection CssUnknownTarget*/
-  src: url("assets/fonts/LXGWWenKai-Regular.ttf") format("truetype");
+  src: url('../assets/fonts/LXGWWenKai-Regular.ttf') format('truetype');
 }
 
 @font-face {
-  font-family: "WebgalUI";
+  font-family: 'WebgalUI';
   /*noinspection CssUnknownTarget*/
-  src: url("assets/fonts/OPPOSans-R.ttf") format("truetype");
+  src: url('../assets/fonts/OPPOSans-R.ttf') format('truetype');
 }
 
 .StartButton {
@@ -60,9 +61,8 @@ body {
   background-color: #000;
   font-size: 16px;
   margin: 0;
-  font-family: "WebgalUI", -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-  'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-  sans-serif;
+  font-family: 'WebgalUI', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow: hidden;
@@ -70,8 +70,7 @@ body {
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-  monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
 #root {
@@ -140,7 +139,6 @@ code {
 /*    }*/
 /*}*/
 
-
 /*@media screen and (max-width: 1100px) {*/
 /*    !*手机端视图*!*/
 /*    #root {*/
@@ -168,7 +166,7 @@ code {
 //   /*-webkit-overflow-scrolling: auto;*/
 // }
 
-#pixiCanvas{
+#pixiCanvas {
   z-index: 5;
 }
 
