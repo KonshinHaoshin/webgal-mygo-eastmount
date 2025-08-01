@@ -1,4 +1,4 @@
-import mitt from 'mitt';
+import mitt from './mitt';
 
 interface IWebgalEvent<T> {
   on: (callback: (message?: T) => void, id?: string) => void;

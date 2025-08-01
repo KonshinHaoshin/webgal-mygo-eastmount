@@ -17,7 +17,6 @@
     "i18next": "^22.4.15",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
-    "mitt": "^3.0.0",
     "pixi-filters": "^4.2.0",
     "pixi-live2d-display-webgal": "^0.5.11",
     "pixi.js": "^6.3.0",
