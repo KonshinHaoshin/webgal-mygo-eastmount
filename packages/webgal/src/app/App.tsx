@@ -12,9 +12,9 @@ import Menu from '@/UI/Menu/Menu';
 import GlobalDialog from '@/UI/GlobalDialog/GlobalDialog';
 import { PanicOverlay } from '@/UI/PanicOverlay/PanicOverlay';
 import DevPanel from '@/UI/DevPanel/DevPanel';
+import './modern-css-reset.css';
 import './index.scss';
 import './animation.scss';
-import 'modern-css-reset/dist/reset.min.css';
 
 function App() {
   useEffect(() => {
