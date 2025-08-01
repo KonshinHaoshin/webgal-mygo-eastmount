@@ -7,12 +7,12 @@ import { language } from '@/config/language';
 import {
   IAppreciationAsset,
   IOptionData,
-  ISaveData,
+  // ISaveData,
   ISetOptionDataPayload,
   ISetUserDataPayload,
   IUserData,
   fullScreenOption,
-  playSpeed,
+  // playSpeed,
   textFont,
   textSize,
   voiceOption,
@@ -24,9 +24,9 @@ import { ISetGameVar } from './stageInterface';
 const initialOptionSet: IOptionData = {
   slPage: 1,
   volumeMain: 100, // 主音量
-  textSpeed: 50, // 文字速度
-  autoSpeed: 50, // 自动播放速度
-  textSize: textSize.medium,
+  textSpeed: 30, // 文字速度
+  autoSpeed: 20, // 自动播放速度
+  textSize: textSize.small,
   vocalVolume: 100, // 语音音量
   bgmVolume: 25, // 背景音乐音量
   seVolume: 100, // 音效音量
@@ -63,7 +63,7 @@ const userDataSlice = createSlice({
       state[key] = value;
     },
     unlockCgInUserData: (state, action: PayloadAction<IAppreciationAsset>) => {
-      const { name, url, series } = action.payload;
+      const { name: _name, url, series } = action.payload;
       // 检查是否存在
       let isExist = false;
       state.appreciationData.cg.forEach((e) => {
@@ -78,7 +78,7 @@ const userDataSlice = createSlice({
       }
     },
     unlockBgmInUserData: (state, action: PayloadAction<IAppreciationAsset>) => {
-      const { name, url, series } = action.payload;
+      const { name: _name, url, series } = action.payload;
       // 检查是否存在
       let isExist = false;
       state.appreciationData.bgm.forEach((e) => {
