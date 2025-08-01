@@ -3,9 +3,15 @@
  * @author Mahiru
  */
 import { getStorage } from '@/Core/controller/storage/storageController';
-import { GuiAsset, IGuiState, MenuPanelTag, setAssetPayload, setVisibilityPayload } from '@/store/guiInterface';
+import {
+  //  GuiAsset,
+  IGuiState,
+  MenuPanelTag,
+  setAssetPayload,
+  setVisibilityPayload,
+} from '@/store/guiInterface';
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { key } from 'localforage';
+// import { key } from 'localforage';
 
 /**
  * 初始GUI状态表
@@ -16,7 +22,7 @@ const initState: IGuiState = {
   showTitle: true,
   showMenuPanel: false,
   showTextBox: true,
-  showControls: true,
+  showControls: false,
   controlsVisibility: true,
   currentMenuTag: MenuPanelTag.Option,
   titleBg: '',
