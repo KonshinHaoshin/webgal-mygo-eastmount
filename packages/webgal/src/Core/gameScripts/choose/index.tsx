@@ -7,7 +7,7 @@ import React from 'react';
 import styles from './choose.module.scss';
 import { webgalStore } from '@/store/store';
 import { textFont } from '@/store/userDataInterface';
-import { PerformController } from '@/Core/Modules/perform/performController';
+// import { PerformController } from '@/Core/Modules/perform/performController';
 import { useSEByWebgalStore } from '@/hooks/useSoundEffect';
 import { WebGAL } from '@/Core/WebGAL';
 import { whenChecker } from '@/Core/controller/gamePlay/scriptExecutor';
@@ -88,7 +88,7 @@ function Choose(props: { chooseOptions: ChooseOption[] }) {
   // 运行时计算JSX.Element[]
   const runtimeBuildList = (chooseListFull: ChooseOption[]) => {
     return chooseListFull
-      .filter((e, i) => whenChecker(e.showCondition))
+      .filter((e, _i) => whenChecker(e.showCondition))
       .map((e, i) => {
         const enable = whenChecker(e.enableCondition);
         const className = enable
