@@ -105,9 +105,9 @@ export const TextBox = () => {
   );
 };
 
-function isCJK(character: string) {
-  return !!character.match(/[\u4e00-\u9fa5]|[\u0800-\u4e00]|[\uac00-\ud7ff]/);
-}
+// function isCJK(character: string) {
+//   return !!character.match(/[\u4e00-\u9fa5]|[\u0800-\u4e00]|[\uac00-\ud7ff]/);
+// }
 
 /**
  * 编译文本拓展语法到增强版节点
@@ -171,78 +171,13 @@ export function compileSentence(
 }
 
 /**
+ * 文本字符分割 代码来自明见A-kirami (有修改)
  * @param sentence
- * @param replace_space_with_nbsp
+ * @param shouldReplaceSpaceWithNbsp
  */
-export function splitChars(sentence: string, replace_space_with_nbsp = true) {
+export function splitChars(sentence: string, shouldReplaceSpaceWithNbsp = true): Array<string> {
   if (!sentence) return [''];
-  const words: string[] = [];
-  let word = '';
-  let cjkFlag = isCJK(sentence[0]);
-
-  const isPunctuation = (ch: string): boolean => {
-    const regex = /[!-\/:-@\[-`{-~\u2000-\u206F\u3000-\u303F\uff00-\uffef]/g;
-    return regex.test(ch);
-  };
-
-  for (const character of sentence) {
-    // if (character === '|') {
-    //   if (word) {
-    //     words.push(word);
-    //     word = '';
-    //   }
-    //   words.push('<br />');
-    //   cjkFlag = false;
-    //   continue;
-    // }
-    if (character === ' ' || character === '\u00a0') {
-      // Space
-      if (word) {
-        words.push(word);
-        word = '';
-      }
-      if (replace_space_with_nbsp) {
-        words.push('\u00a0');
-      } else words.push(character);
-      cjkFlag = false;
-    } else if (isCJK(character) && !isPunctuation(character)) {
-      if (!cjkFlag && word) {
-        words.push(word);
-        word = '';
-      }
-      words.push(character);
-      cjkFlag = true;
-    } else {
-      if (isPunctuation(character)) {
-        if (word) {
-          // If it is a punctuation and there is a preceding word, add it to the word
-          word += character;
-          words.push(word);
-          word = '';
-        } else if (words.length > 0) {
-          // If no preceding word in the current iteration, but there are already words in the array, append to the last word
-          words[words.length - 1] += character;
-        } else {
-          // If no preceding word, still add the punctuation as a new word
-          words.push(character);
-        }
-        continue;
-      }
-
-      if (cjkFlag && word) {
-        words.push(word);
-        word = '';
-      }
-      word += character;
-      cjkFlag = false;
-    }
-  }
-
-  if (word) {
-    words.push(word);
-  }
-
-  return words;
+  return Array.from(sentence).map((char) => (char === ' ' ? (shouldReplaceSpaceWithNbsp ? '\u00a0' : char) : char));
 }
 
 enum SegmentType {
@@ -262,7 +197,7 @@ interface Segment {
 }
 
 function parseString(input: string): Segment[] {
-  const regex = /(\[(.*?)\]\((.*?)\))|([^\[\]]+)/g;
+  const regex = /(\[(.*?)\]\((.*?)\))|([^[\]]+)/g;
   const result: Segment[] = [];
   let match: RegExpExecArray | null;
 
