@@ -1,7 +1,7 @@
 Game_name:WebGAL_MYGO;
 Game_key:;
-Title_img:WebGAL_New_Enter_Image.png;
+Title_img:WebGAL_MYGO_Title_Image.png;
 Title_bgm:s_Title.mp3;
-Game_Logo:WebGalEnter.png;
+Game_Logo:WebGAL_MYGO_Enter.png;
 Show_panic:true;
 Enable_Appreciation:true;

@@ -8,6 +8,26 @@
     <!--    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>-->
     <title>WebGAL</title>
     <style>
+      @font-face {
+        font-family: '思源宋体';
+        src: url('static/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'LXGW';
+        src: url('static/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'WebgalUI';
+        src: url('static/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: '江城圆体';
+        src: url('static/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
+      }
+      @font-face {
+        font-family: 'JiangChengYuanTi';
+        src: url('static/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
+      }
       #Title_enter_page {
         width: 2560px;
         height: 1440px;
@@ -22,7 +42,7 @@
         height: 100%;
         width: 100%;
         position: absolute;
-        background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%);
+        background: #fff;
         top: 0;
         opacity: 1;
         transition: opacity 1s;
@@ -46,9 +66,9 @@
         position: absolute;
         top: 0;
         height: 100%;
-        opacity: 1;
+        opacity: 0;
         font-size: 175%;
-        transition: opacity 1s;
+        transition: opacity 1s ease-in;
         z-index: 15;
         font-family: '思源宋体', Georgia, serif;
       }
@@ -196,7 +216,16 @@
         // 将该标签添加到 head 中
         document.getElementsByTagName('head')[0].appendChild(meta);
         resize();
-        window.onload = resize;
+        window.onload = function () {
+          resize();
+          // 等待一小段时间确保字体加载完成，然后显示文本
+          setTimeout(() => {
+            const enterText = document.getElementById('Title_enter_text');
+            if (enterText) {
+              enterText.style.opacity = '1';
+            }
+          }, 250);
+        };
         window.onresize = resize;
         // 监听键盘 F11 事件，全屏时触发页面调整
         document.onkeydown = function (event) {
@@ -270,16 +299,15 @@
         const title = document.getElementById('Title_enter_page');
         setTimeout(() => {
           if (title) title.style.opacity = '0';
-        }, 500); //500ms后开始降低落地页透明度
+        }, 1500); //1500ms后开始降低落地页透明度
         if (!isIOS && title) {
           title.style.pointerEvents = 'none'; //落地页不再响应点击
-          title.style.background = 'linear-gradient( #a1c4fd 0%, #c2e9fb 100%)'; //改变标题渐变效果
         }
         setTimeout(() => {
           if (title) {
             title.style.display = 'none';
           }
-        }, 2000); // 将落地页设置为不显示
+        }, 2500); // 将落地页设置为不显示
         window.enterPromise();
         delete window.enterPromise;
       }

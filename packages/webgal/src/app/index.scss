@@ -3,30 +3,6 @@
 $screenWidth: 2560px;
 $screenHeight: 1440px;
 
-@font-face {
-  font-family: '思源宋体';
-  /*noinspection CssUnknownTarget*/
-  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'LXGW';
-  /*noinspection CssUnknownTarget*/
-  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: 'WebgalUI';
-  /*noinspection CssUnknownTarget*/
-  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
-}
-
-@font-face {
-  font-family: '江城圆体';
-  /*noinspection CssUnknownTarget*/
-  src: url('../assets/fonts/JiangChengYuanTi_500W.ttf') format('truetype');
-}
-
 .StartButton {
   animation: StartButton_blink 4s infinite;
 }
