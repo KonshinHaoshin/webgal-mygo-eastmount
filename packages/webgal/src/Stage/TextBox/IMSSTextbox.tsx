@@ -1,5 +1,8 @@
 import styles from './textbox.module.scss';
-import { ReactNode, useEffect } from 'react';
+import {
+  //  ReactNode,
+  useEffect,
+} from 'react';
 import { WebGAL } from '@/Core/WebGAL';
 import { ITextboxProps } from './types';
 import useApplyStyle from '@/hooks/useApplyStyle';
@@ -14,7 +17,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
     currentDialogKey,
     isText,
     isSafari,
-    isFirefox: boolean,
+    isFirefox: _isFirefox,
     fontSize,
     miniAvatar,
     isHasName,
@@ -47,7 +50,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
     const textline = line.map((en, index) => {
       const e = en.reactNode;
       let style = '';
-      let tips = '';
+      let _tips = '';
       let style_alltext = '';
       let isEnhanced = false;
       if (en.enhancedValue) {
@@ -60,7 +63,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
               style = value;
               break;
             case 'tips':
-              tips = value;
+              _tips = value;
               break;
             case 'style-alltext':
               style_alltext = value;
@@ -108,7 +111,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
     const textLine = line.map((en, index) => {
       const e = en.reactNode;
       let style = '';
-      let tips = '';
+      let _tips = '';
       let style_alltext = '';
       if (en.enhancedValue) {
         const data = en.enhancedValue;
@@ -119,7 +122,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
               style = value;
               break;
             case 'tips':
-              tips = value;
+              _tips = value;
               break;
             case 'style-alltext':
               style_alltext = value;

@@ -39,7 +39,7 @@ export const keyboard: Keyboard | undefined = 'keyboard' in navigator && (naviga
 // export const fastSaveGameKey = `FastSaveKey`;
 // export const isFastSaveKey = `FastSaveActive`;
 
-export function useHotkey(opt?: HotKeyType) {
+export function useHotkey(_opt?: HotKeyType) {
   useMouseRightClickHotKey();
   useMouseWheel();
   useSkip();
@@ -206,7 +206,7 @@ export function useSkip() {
       stopFast();
     }
   }, []);
-  const handleWindowBlur = useCallback((e) => {
+  const handleWindowBlur = useCallback((_e) => {
     // 停止快进
     stopFast();
   }, []);
@@ -235,7 +235,7 @@ export function useSkip() {
  */
 export function useFastSaveBeforeUnloadPage() {
   const validMenuGameStart = useValidMenuGameStart();
-  const handleWindowUnload = useCallback(async (e: BeforeUnloadEvent) => {
+  const handleWindowUnload = useCallback(async (_e: BeforeUnloadEvent) => {
     if (validMenuGameStart()) {
       // 游戏启动了才保存数据 防止无效数据覆盖现在的数据
       await fastSaveGame();
@@ -310,16 +310,16 @@ function useSetComponentVisibility(): (component: keyof componentsVisibility, vi
   };
 }
 
-function nextTick(callback: () => void) {
-  // 具体实现根据浏览器的兼容实现微任务
-  if (typeof Promise !== 'undefined') {
-    const p = Promise.resolve();
-    p.then(callback);
-  } else {
-    // 兼容IE
-    setTimeout(callback, 0);
-  }
-}
+// function nextTick(callback: () => void) {
+//   // 具体实现根据浏览器的兼容实现微任务
+//   if (typeof Promise !== 'undefined') {
+//     const p = Promise.resolve();
+//     p.then(callback);
+//   } else {
+//     // 兼容IE
+//     setTimeout(callback, 0);
+//   }
+// }
 
 /**
  * 空格 & 回车 跳转到下一条
@@ -350,7 +350,7 @@ export function useSpaceAndEnter() {
       lockRef.current = false;
     }
   }, []);
-  const handleWindowBlur = useCallback((e) => {
+  const handleWindowBlur = useCallback((_e) => {
     lockRef.current = false;
   }, []);
   // mounted时绑定事件
@@ -372,7 +372,8 @@ export function useSpaceAndEnter() {
  * @param dom
  */
 function hasScrollToBottom(dom: Element) {
-  const { scrollTop, clientHeight, scrollHeight } = dom;
+  // const { scrollTop, clientHeight, scrollHeight } = dom;
+  const { scrollTop } = dom;
   return scrollTop === 0;
 }
 

@@ -2,7 +2,10 @@ import styles from '@/UI/Menu/Options/options.module.scss';
 import { NormalOption } from '@/UI/Menu/Options/NormalOption';
 import { NormalButton } from '@/UI/Menu/Options/NormalButton';
 import { resetAllData, resetOptionSet, setOptionData } from '@/store/userDataReducer';
-import { IUserData, playSpeed } from '@/store/userDataInterface';
+import {
+  IUserData,
+  //  playSpeed
+} from '@/store/userDataInterface';
 import { getStorage, setStorage, dumpToStorageFast } from '@/Core/controller/storage/storageController';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, webgalStore } from '@/store/store';
@@ -16,7 +19,11 @@ import { useState } from 'react';
 import About from '@/UI/Menu/Options/System/About';
 import { WebGAL } from '@/Core/WebGAL';
 import useSoundEffect from '@/hooks/useSoundEffect';
-import savesReducer, { ISavesData, saveActions } from '@/store/savesReducer';
+import {
+  //  savesReducer,
+  ISavesData,
+  saveActions,
+} from '@/store/savesReducer';
 import { dumpFastSaveToStorage, dumpSavesToStorage } from '@/Core/controller/storage/savesController';
 import { OptionSlider } from '@/UI/Menu/Options/OptionSlider';
 import { Info } from '@icon-park/react';
