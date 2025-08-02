@@ -1,4 +1,6 @@
 WebGAL: MYGO;
 :;
 :;
+changeFigure:寡妇立希/寡妇立希.jsonl -id=1 -right -motion=cry01 -expression=cry01;
+changeFigure:爱音 医生 屑 2.gif -id=2 -left;
 椎名立希: 1;

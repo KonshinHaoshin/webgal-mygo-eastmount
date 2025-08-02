@@ -1,0 +1,5 @@
+{"index": 0, "id": "taki0", "path": "后发/model.json", "folder": "后发"}
+{"index": 1, "id": "taki1", "path": "身体/025_live_event_243_rmodel.json", "folder": "身体"}
+{"index": 2, "id": "taki2", "path": "头/model.json", "folder": "头"}
+{"index": 3, "id": "taki3", "path": "帽子/025_live_event_243_rmodel.json", "folder": "帽子"}
+{"motions": ["ando01", "angry01", "angry02", "angry03", "angry04", "bye01", "bye02", "cry01", "cry02", "idle01", "kandou01", "kime01", "nf01", "nf02", "nf03", "nf04", "nf05", "nf_left01", "nf_right01", "nnf01", "nnf02", "nnf03", "nnf04", "nnf05", "nnf_left01", "nnf_right01", "pui01", "sad01", "sad02", "sad03", "serious01", "serious02", "shame01", "shame02", "sigh01", "sigh02", "smile01", "smile02", "smile03", "smile04", "surprised01", "surprised02", "thinking01", "娇羞"], "expressions": ["ando01", "angry01", "angry02", "angry03", "angry04", "bye01", "bye02", "cry01", "cry02", "default", "idle01", "kandou01", "kime01", "pui01", "sad01", "sad02", "sad03", "serious01", "serious02", "shame01", "shame02", "sigh01", "sigh02", "smile01", "smile02", "smile03", "smile04", "surprised01", "surprised02", "thinking01", "娇羞"], "import": 33}
