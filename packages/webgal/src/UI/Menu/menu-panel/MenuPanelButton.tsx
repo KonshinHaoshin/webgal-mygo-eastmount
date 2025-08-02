@@ -1,15 +1,11 @@
-import styles from './menuPanel.module.scss';
-import { MenuIconMap } from './MenuIconMap';
-import { IMenuPanel } from '@/UI/Menu/MenuPanel/menuPanelInterface';
 import useSoundEffect from '@/hooks/useSoundEffect';
+import { IMenuPanel } from './menuPanelInterface';
+import { MenuIconMap } from './MenuIconMap';
+import styles from './menuPanel.module.scss';
 
-/**
- * 菜单标签页切换按钮
- * @param props
- * @constructor
- */
-export const MenuPanelButton = (props: IMenuPanel) => {
-  const { playSePageChange, playSeEnter } = useSoundEffect();
+/** 菜单标签页切换按钮 */
+export function MenuPanelButton(props: IMenuPanel) {
+  const { playSeEnter } = useSoundEffect();
   let buttonClassName = styles.MenuPanel_button;
   if (props.hasOwnProperty('buttonOnClassName')) {
     buttonClassName = buttonClassName + props.buttonOnClassName;
@@ -19,9 +15,10 @@ export const MenuPanelButton = (props: IMenuPanel) => {
       className={buttonClassName}
       onClick={() => {
         props.clickFunc();
-        // playSePageChange();
       }}
-      onMouseEnter={playSeEnter}
+      onMouseEnter={() => {
+        playSeEnter();
+      }}
       style={{ ...props.style, color: props.tagColor }}
     >
       <div className={styles.MenuPanel_button_icon}>
@@ -30,4 +27,4 @@ export const MenuPanelButton = (props: IMenuPanel) => {
       {props.tagName}
     </div>
   );
-};
+}

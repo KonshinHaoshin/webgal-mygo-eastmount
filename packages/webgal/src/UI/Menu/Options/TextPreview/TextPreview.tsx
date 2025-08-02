@@ -4,7 +4,7 @@ import { RootState } from '@/store/store';
 import { useFontFamily } from '@/hooks/useFontFamily';
 import { useTextAnimationDuration, useTextDelay } from '@/hooks/useTextOptions';
 import useTrans from '@/hooks/useTrans';
-import { getTextSize } from '@/UI/getTextSize';
+import { getTextSize } from '@/UI/utils/getTextSize';
 import IMSSTextbox from '@/Stage/TextBox/IMSSTextbox';
 import { compileSentence } from '@/Stage/TextBox/TextBox';
 import { useState } from 'react';

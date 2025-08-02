@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useFontFamily } from '@/hooks/useFontFamily';
 import { useTextAnimationDuration, useTextDelay } from '@/hooks/useTextOptions';
-import { getTextSize } from '@/UI/getTextSize';
+import { getTextSize } from '@/UI/utils/getTextSize';
 import { match } from '@/Core/util/match';
 import { textSize } from '@/store/userDataInterface';
 import IMSSTextbox from '@/Stage/TextBox/IMSSTextbox';

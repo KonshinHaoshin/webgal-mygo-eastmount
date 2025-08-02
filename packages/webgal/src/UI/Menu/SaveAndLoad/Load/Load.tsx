@@ -1,4 +1,8 @@
-import { CSSProperties, FC, useEffect } from 'react';
+import {
+  //  CSSProperties,
+  FC,
+  useEffect,
+} from 'react';
 import { loadGame } from '@/Core/controller/storage/loadGame';
 import styles from '../SaveAndLoad.module.scss';
 // import {saveGame} from '@/Core/controller/storage/saveGame';
@@ -7,7 +11,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setSlPage } from '@/store/userDataReducer';
 import useTrans from '@/hooks/useTrans';
-import { useTranslation } from 'react-i18next';
+// import { useTranslation } from 'react-i18next';
 import useSoundEffect from '@/hooks/useSoundEffect';
 import { getSavesFromStorage } from '@/Core/controller/storage/savesController';
 import { easyCompile } from '@/UI/Menu/SaveAndLoad/Save/Save';
