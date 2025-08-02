@@ -1,5 +1,5 @@
 import './slider.css';
-import { ISlider } from '@/UI/Menu/Options/OptionInterface';
+import { ISlider } from './OptionInterface';
 import { useEffect, useState, useRef } from 'react';
 import useSoundEffect from '@/hooks/useSoundEffect';
 

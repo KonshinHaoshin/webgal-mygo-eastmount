@@ -1,5 +1,5 @@
 import { ReactElement } from 'react';
-import { INormalButton } from '@/UI/Menu/Options/OptionInterface';
+import { INormalButton } from './OptionInterface';
 import styles from './normalButton.module.scss';
 import useSoundEffect from '@/hooks/useSoundEffect';
 

@@ -5,7 +5,7 @@ import { voiceOption } from '@/store/userDataInterface';
 import useTrans from '@/hooks/useTrans';
 import { setStorage } from '@/Core/controller/storage/storageController';
 import { NormalOption } from '../NormalOption';
-import { NormalButton } from '..//NormalButton';
+import { NormalButton } from '../NormalButton';
 import { CustomSlider } from '../CustomSlider';
 import styles from '../options.module.scss';
 

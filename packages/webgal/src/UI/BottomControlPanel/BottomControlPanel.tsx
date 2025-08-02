@@ -30,7 +30,7 @@ import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
 import { loadGame } from '@/Core/controller/storage/loadGame';
 import { saveGame } from '@/Core/controller/storage/saveGame';
 import { showGlogalDialog, switchControls } from '../GlobalDialog/GlobalDialog';
-import { easyCompile } from '../Menu/SaveAndLoad/Save/Save';
+import { easyCompile } from '../Menu/views/SaveAndLoad/Save/Save';
 import styles from './bottomControlPanel.module.scss';
 
 export const BottomControlPanel = () => {

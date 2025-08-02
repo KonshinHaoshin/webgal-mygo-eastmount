@@ -14,7 +14,7 @@ import useTrans from '@/hooks/useTrans';
 // import { useTranslation } from 'react-i18next';
 import useSoundEffect from '@/hooks/useSoundEffect';
 import { getSavesFromStorage } from '@/Core/controller/storage/savesController';
-import { easyCompile } from '@/UI/Menu/SaveAndLoad/Save/Save';
+import { easyCompile } from '../Save/Save';
 
 export const Load: FC = () => {
   const { playSeClick, playSeEnter, playSePageChange } = useSoundEffect();
