@@ -1,11 +1,13 @@
-import useLanguage from '@/hooks/useLanguage';
 import { useEffect, useState } from 'react';
-import s from './translation.module.scss';
-import languages, { language } from '@/config/language';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
+import languages, { language } from '@/config/language';
+import useLanguage from '@/hooks/useLanguage';
+import s from './translation.module.scss';
 
 export default function Translation() {
+  console.log('$$$Translation');
+
   const setLanguage = useLanguage();
 
   const [isShowSelectLanguage, setIsShowSelectLanguage] = useState(false);

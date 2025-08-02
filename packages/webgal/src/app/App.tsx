@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { initializeScript } from '@/Core/initializeScript';
-import Translation from '@/UI/Translation/Translation';
+// import Translation from '@/UI/Translation/Translation';
 import { Stage } from '@/Stage/Stage';
 import { BottomControlPanel } from '@/UI/BottomControlPanel/BottomControlPanel';
 import { BottomControlPanelFilm } from '@/UI/BottomControlPanel/BottomControlPanelFilm';
@@ -24,7 +24,7 @@ function App() {
   // Provider用于对各组件提供状态
   return (
     <div className="App">
-      <Translation />
+      {/* <Translation /> */}
       <Stage />
       <BottomControlPanel />
       <BottomControlPanelFilm />

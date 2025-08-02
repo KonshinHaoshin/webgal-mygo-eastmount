@@ -1,15 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './app/App';
+import App from '@/app/App';
 
 /**
  * i18n
  */
 import i18n from 'i18next';
 import { initReactI18next, Trans } from 'react-i18next';
-import { defaultLanguage, i18nTranslationResources, language } from './config/language';
-import { webgalStore } from './store/store';
 import { Provider } from 'react-redux';
+import { defaultLanguage, i18nTranslationResources, language } from '@/config/language';
+import { webgalStore } from '@/store/store';
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
