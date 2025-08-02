@@ -1,8 +1,0 @@
-Game_name:WebGAL_MYGO;
-Game_key:;
-Title_img:WebGAL_MYGO_Title_Image.png;
-Title_bgm:s_Title.mp3;
-Game_Logo:WebGAL_MYGO_Enter.png;
-Default_Language:zh_CN;
-Show_panic:true;
-Enable_Appreciation:true;
