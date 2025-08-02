@@ -1,8 +1,8 @@
-import { logger } from '../../util/logger';
+// import { logger } from '../../util/logger';
 import { ISaveData } from '@/store/userDataInterface';
-import { dumpToStorageFast } from './storageController';
+// import { dumpToStorageFast } from './storageController';
 import { webgalStore } from '@/store/store';
-import { setUserData } from '@/store/userDataReducer';
+// import { setUserData } from '@/store/userDataReducer';
 import cloneDeep from 'lodash/cloneDeep';
 
 import { WebGAL } from '@/Core/WebGAL';

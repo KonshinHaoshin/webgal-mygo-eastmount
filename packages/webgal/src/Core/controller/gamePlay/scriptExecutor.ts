@@ -9,8 +9,8 @@ import { strIf } from '@/Core/controller/gamePlay/strIf';
 import { nextSentence } from '@/Core/controller/gamePlay/nextSentence';
 import cloneDeep from 'lodash/cloneDeep';
 import { ISceneEntry } from '@/Core/Modules/scene';
-import { IBacklogItem } from '@/Core/Modules/backlog';
-import { SYSTEM_CONFIG } from '@/config';
+// import { IBacklogItem } from '@/Core/Modules/backlog';
+// import { SYSTEM_CONFIG } from '@/config';
 import { WebGAL } from '@/Core/WebGAL';
 
 export const whenChecker = (whenValue: string | undefined): boolean => {
@@ -18,7 +18,7 @@ export const whenChecker = (whenValue: string | undefined): boolean => {
     return true;
   }
   // 先把变量解析出来
-  const valExpArr = whenValue.split(/([+\-*\/()><!]|>=|<=|==|&&|\|\||!=)/g);
+  const valExpArr = whenValue.split(/([+\-*/()><!]|>=|<=|==|&&|\|\||!=)/g);
   const valExp = valExpArr
     .map((e) => {
       if (e.match(/[a-zA-Z]/)) {
