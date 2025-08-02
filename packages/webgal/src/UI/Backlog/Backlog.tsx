@@ -13,7 +13,6 @@ import styles from './backlog.module.scss';
 
 export const Backlog = () => {
   const t = useTrans('gaming.');
-  // logger.info('Backlog render');
   const { playSeEnter, playSeClick } = useSoundEffect();
   const GUIStore = useSelector((state: RootState) => state.GUI);
   const isBacklogOpen = GUIStore.showBacklog;
@@ -58,7 +57,6 @@ export const Backlog = () => {
   const backlogList = useMemo<any>(() => {
     let backlogs = [];
     const current_backlog_len = WebGAL.backlogManager.getBacklog().length;
-    // logger.info('backlogList render');
     for (let i = 0; i < Math.min(current_backlog_len, limit); i++) {
       const indexOfBacklog = current_backlog_len - i - 1;
       const backlogItem = WebGAL.backlogManager.getBacklog()[indexOfBacklog];
@@ -72,13 +70,7 @@ export const Backlog = () => {
       const showTextElementList = showTextArrayReduced.map((line, index) => {
         return (
           <div key={`backlog-line-${index}`}>
-            {line.map((e, index) => {
-              if (e === '<br />') {
-                return <br key={`br${index}`} />;
-              } else {
-                return e;
-              }
-            })}
+            {line.map((e, index) => (e === '<br />' ? <br key={`br${index}`} /> : e))}
           </div>
         );
       });
@@ -92,13 +84,7 @@ export const Backlog = () => {
       const nameElementList = showNameArrayReduced.map((line, index) => {
         return (
           <div key={`backlog-line-${index}`}>
-            {line.map((e, index) => {
-              if (e === '<br />') {
-                return <br key={`br${index}`} />;
-              } else {
-                return e;
-              }
-            })}
+            {line.map((e, index) => (e === '<br />' ? <br key={`br${index}`} /> : e))}
           </div>
         );
       });
@@ -193,57 +179,48 @@ export const Backlog = () => {
     }
   }, [GUIStore.showBacklog]);
   return (
-    <>
-      {
-        // ${indexHide ? styles.Backlog_main_out_IndexHide : ''}
-        <div
-          className={`
-          ${GUIStore.showBacklog ? styles.Backlog_main : styles.Backlog_main_out}
-          ${indexHide ? styles.Backlog_main_out_IndexHide : ''}
-          `}
-        >
-          <div className={styles.backlog_top}>
-            <CloseSmall
-              className={styles.backlog_top_icon}
-              onClick={() => {
-                playSeClick();
-                dispatch(setVisibility({ component: 'showBacklog', visibility: false }));
-                dispatch(setVisibility({ component: 'showTextBox', visibility: true }));
-              }}
-              onMouseEnter={playSeEnter}
-              theme="outline"
-              size="4em"
-              fill="#ffffff"
-              strokeWidth={3}
-            />
-            <div
-              className={styles.backlog_title}
-              onClick={() => {
-                logger.info('Rua! Testing');
-              }}
-            >
-              {t('buttons.backlog')}
-            </div>
-          </div>
-          {GUIStore.showBacklog && (
-            <div className={`${styles.backlog_content} ${isDisableScroll ? styles.Backlog_main_DisableScroll : ''}`}>
-              {backlogList}
-            </div>
-          )}
-        </div>
+    <div
+      className={
+        (GUIStore.showBacklog ? styles.Backlog_main : styles.Backlog_main_out) +
+        (indexHide ? ' ' + styles.Backlog_main_out_IndexHide : '')
       }
-    </>
+    >
+      <div className={styles.backlog_top}>
+        <CloseSmall
+          className={styles.backlog_top_icon}
+          onClick={() => {
+            playSeClick();
+            dispatch(setVisibility({ component: 'showBacklog', visibility: false }));
+            dispatch(setVisibility({ component: 'showTextBox', visibility: true }));
+          }}
+          onMouseEnter={playSeEnter}
+          theme="outline"
+          size="4em"
+          fill="#ffffff"
+          strokeWidth={3}
+        />
+        <div
+          className={styles.backlog_title}
+          onClick={() => {
+            logger.info('Rua! Testing');
+          }}
+        >
+          {t('buttons.backlog')}
+        </div>
+      </div>
+      {GUIStore.showBacklog && (
+        <div className={`${styles.backlog_content} ${isDisableScroll ? styles.Backlog_main_DisableScroll : ''}`}>
+          {backlogList}
+        </div>
+      )}
+    </div>
   );
 };
 
 export function mergeStringsAndKeepObjects(arr: ReactNode[]): ReactNode[][] {
   let result = [];
   let currentString = '';
-
-  // eslint-disable-next-line @typescript-eslint/prefer-for-of
-  for (let i = 0; i < arr.length; i++) {
-    const currentItem = arr[i];
-
+  for (const currentItem of arr) {
     if (typeof currentItem === 'string') {
       currentString += currentItem;
     } else {
@@ -254,10 +231,6 @@ export function mergeStringsAndKeepObjects(arr: ReactNode[]): ReactNode[][] {
       result.push(currentItem);
     }
   }
-
-  if (currentString !== '') {
-    result.push(currentString);
-  }
-
+  if (currentString !== '') result.push(currentString);
   return result as ReactNode[][];
 }

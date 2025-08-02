@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { IGuiState } from '@/store/guiInterface';
 import { IStageState } from '@/store/stageInterface';
@@ -96,7 +96,7 @@ function updateControlsVisibility(
   }
 }
 
-export const Stage: FC = () => {
+export function Stage() {
   const stageState = useSelector((state: RootState) => state.stage);
   const GUIState = useSelector((state: RootState) => state.GUI);
   const dispatch = useDispatch();
@@ -106,8 +106,6 @@ export const Stage: FC = () => {
   return (
     <div className={styles.MainStage_main}>
       <FullScreenPerform />
-      {/* 已弃用旧的立绘与背景舞台 */}
-      {/* <OldStage /> */}
       <MainStage />
       <div id="pixiContianer" className={styles.pixiContainer} style={{ zIndex: isIOS ? '-5' : undefined }} />
       <div id="chooseContainer" className={styles.chooseContainer} />
@@ -134,4 +132,4 @@ export const Stage: FC = () => {
       <IntroContainer />
     </div>
   );
-};
+}

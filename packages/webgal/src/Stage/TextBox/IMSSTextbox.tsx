@@ -1,13 +1,10 @@
-import styles from './textbox.module.scss';
-import {
-  //  ReactNode,
-  useEffect,
-} from 'react';
-import { WebGAL } from '@/Core/WebGAL';
-import { ITextboxProps } from './types';
-import useApplyStyle from '@/hooks/useApplyStyle';
+import { useEffect } from 'react';
 import { css } from '@emotion/css';
 import { textSize } from '@/store/userDataInterface';
+import useApplyStyle from '@/hooks/useApplyStyle';
+import { WebGAL } from '@/Core/WebGAL';
+import { ITextboxProps } from './types';
+import styles from './textbox.module.scss';
 
 export default function IMSSTextbox(props: ITextboxProps) {
   const {
@@ -191,82 +188,53 @@ export default function IMSSTextbox(props: ITextboxProps) {
   const lineHeightCssStr = `line-height: ${textSizeState === textSize.medium ? '2.2em' : '2em'}`;
   const lhCss = css(lineHeightCssStr);
 
+  if (!isText) return null;
   return (
-    <>
-      {isText && (
-        <div className={styles.TextBox_Container}>
-          <div
-            className={
-              applyStyle('TextBox_main', styles.TextBox_main) +
-              ' ' +
-              applyStyle('TextBox_Background', styles.TextBox_Background) +
-              ' ' +
-              (miniAvatar === ''
-                ? applyStyle('TextBox_main_miniavatarOff', styles.TextBox_main_miniavatarOff)
-                : undefined)
-            }
-            style={{
-              opacity: `${textboxOpacity / 100}`,
-            }}
-          />
-          <div
-            id="textBoxMain"
-            className={
-              applyStyle('TextBox_main', styles.TextBox_main) +
-              ' ' +
-              (miniAvatar === ''
-                ? applyStyle('TextBox_main_miniavatarOff', styles.TextBox_main_miniavatarOff)
-                : undefined)
-            }
-            style={{
-              fontFamily: font,
-            }}
-          >
-            <div id="miniAvatar" className={applyStyle('miniAvatarContainer', styles.miniAvatarContainer)}>
-              {miniAvatar !== '' && (
-                <img className={applyStyle('miniAvatarImg', styles.miniAvatarImg)} alt="miniAvatar" src={miniAvatar} />
-              )}
-            </div>
-            {isHasName && (
-              <>
-                <div
-                  className={
-                    applyStyle('TextBox_showName', styles.TextBox_showName) +
-                    ' ' +
-                    applyStyle('TextBox_ShowName_Background', styles.TextBox_ShowName_Background)
-                  }
-                  style={{
-                    opacity: `${textboxOpacity / 100}`,
-                    fontSize: '200%',
-                  }}
-                >
-                  <span style={{ opacity: 0 }}>{nameElementList}</span>
-                </div>
-                <div
-                  className={applyStyle('TextBox_showName', styles.TextBox_showName)}
-                  style={{
-                    fontSize: '200%',
-                  }}
-                >
-                  {nameElementList}
-                </div>
-              </>
-            )}
-            <div
-              className={`${lhCss} ${applyStyle('text', styles.text)}`}
-              style={{
-                fontSize,
-                flexFlow: 'column',
-                overflow: 'hidden',
-                paddingLeft: '0.1em',
-                // lineHeight: textSizeState === textSize.medium ? '2.2em' : '2em', // 不加的话上半拼音可能会被截断，同时保持排版整齐
-              }}
-            >
-              {textElementList}
-            </div>
-          </div>
+    <div className={styles.TextBox_Container}>
+      <div
+        className={
+          applyStyle('TextBox_main', styles.TextBox_main) +
+          (' ' + applyStyle('TextBox_Background', styles.TextBox_Background)) +
+          (' ' + (miniAvatar === '' ? applyStyle('TextBox_main_miniavatarOff', styles.TextBox_main_miniavatarOff) : ''))
+        }
+        style={{ opacity: `${textboxOpacity / 100}` }}
+      />
+      <div
+        id="textBoxMain"
+        className={
+          applyStyle('TextBox_main', styles.TextBox_main) +
+          (' ' + (miniAvatar === '' ? applyStyle('TextBox_main_miniavatarOff', styles.TextBox_main_miniavatarOff) : ''))
+        }
+        style={{ fontFamily: font }}
+      >
+        <div id="miniAvatar" className={applyStyle('miniAvatarContainer', styles.miniAvatarContainer)}>
+          {miniAvatar !== '' && (
+            <img className={applyStyle('miniAvatarImg', styles.miniAvatarImg)} alt="miniAvatar" src={miniAvatar} />
+          )}
         </div>
-      )}
-    </>
+        {isHasName && (
+          <>
+            <div
+              className={
+                applyStyle('TextBox_showName', styles.TextBox_showName) +
+                (' ' + applyStyle('TextBox_ShowName_Background', styles.TextBox_ShowName_Background))
+              }
+              style={{ opacity: `${textboxOpacity / 100}`, fontSize: '200%' }}
+            >
+              <span style={{ opacity: 0 }}>{nameElementList}</span>
+            </div>
+            <div className={applyStyle('TextBox_showName', styles.TextBox_showName)} style={{ fontSize: '200%' }}>
+              {nameElementList}
+            </div>
+          </>
+        )}
+        <div
+          className={`${lhCss} ${applyStyle('text', styles.text)}`}
+          style={{ fontSize, flexFlow: 'column', overflow: 'hidden', paddingLeft: '0.1em' }}
+        >
+          {textElementList}
+        </div>
+      </div>
+    </div>
   );
 }

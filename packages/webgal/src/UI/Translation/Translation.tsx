@@ -17,40 +17,6 @@ export default function Translation() {
     setLanguage(langId);
   };
 
-  // useEffect(() => {
-  //   const lang = window?.localStorage.getItem('lang');
-  //   if (!lang) {
-  //     setIsShowSelectLanguage(true);
-  //     if (defaultLang) {
-  //       switch (defaultLang) {
-  //         case 'zh_CN':
-  //           setLang(language.zhCn);
-  //           break;
-  //         case 'zh_TW':
-  //           setLang(language.zhTw);
-  //           break;
-  //         case 'en':
-  //           setLang(language.en);
-  //           break;
-  //         case 'ja':
-  //           setLang(language.jp);
-  //           break;
-  //         case 'fr':
-  //           setLang(language.fr);
-  //           break;
-  //         case 'de':
-  //           setLang(language.de);
-  //           break;
-  //         default:
-  //           setLang(language.zhCn);
-  //           break;
-  //       }
-  //     }
-  //   } else {
-  //     setLanguage(Number(window?.localStorage.getItem('lang')), false);
-  //   }
-  // }, [defaultLang]);
-
   useEffect(() => {
     const lang = window?.localStorage.getItem('lang');
     if (lang) {
