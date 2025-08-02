@@ -1,22 +1,21 @@
 import React, { FC } from 'react';
-import styles from './stage.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { IGuiState } from '@/store/guiInterface';
+import { IStageState } from '@/store/stageInterface';
+import { RootState } from '@/store/store';
+import { setVisibility } from '@/store/GUIReducer';
+import { WebGAL } from '@/Core/WebGAL';
+import { isIOS } from '@/Core/initializeScript';
+import { nextSentence } from '@/Core/controller/gamePlay/nextSentence';
+import { stopAll } from '@/Core/controller/gamePlay/fastSkip';
+import { useHotkey } from '@/hooks/useHotkey';
+import { TextBoxFilm } from './TextBox/TextBoxFilm';
+import { MainStage } from './MainStage/MainStage';
+import IntroContainer from './introContainer/IntroContainer';
 import { TextBox } from './TextBox/TextBox';
 import { AudioContainer } from './AudioContainer/AudioContainer';
 import { FullScreenPerform } from './FullScreenPerform/FullScreenPerform';
-import { nextSentence } from '@/Core/controller/gamePlay/nextSentence';
-import { stopAll } from '@/Core/controller/gamePlay/fastSkip';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from '@/store/store';
-import { setVisibility } from '@/store/GUIReducer';
-import { TextBoxFilm } from '@/Stage/TextBox/TextBoxFilm';
-import { useHotkey } from '@/hooks/useHotkey';
-import { MainStage } from '@/Stage/MainStage/MainStage';
-import IntroContainer from '@/Stage/introContainer/IntroContainer';
-import { isIOS } from '@/Core/initializeScript';
-import { WebGAL } from '@/Core/WebGAL';
-import { IGuiState } from '@/store/guiInterface';
-import { IStageState } from '@/store/stageInterface';
-// import OldStage from '@/Components/Stage/OldStage/OldStage';
+import styles from './stage.module.scss';
 
 function inTextBox(event: React.MouseEvent) {
   const tb = document.getElementById('textBoxMain');

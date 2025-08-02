@@ -1,14 +1,13 @@
-import styles from './bottomControlPanelFilm.module.scss';
-import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
-import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
+import { HamburgerButton } from '@icon-park/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setMenuPanelTag, setVisibility } from '@/store/GUIReducer';
 import { componentsVisibility, MenuPanelTag } from '@/store/guiInterface';
-import { backToTitle } from '@/Core/controller/gamePlay/backToTitle';
 import { useValue } from '@/hooks/useValue';
-import { HamburgerButton } from '@icon-park/react';
-
+import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
+import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
+import { backToTitle } from '@/Core/controller/gamePlay/backToTitle';
+import styles from './bottomControlPanelFilm.module.scss';
 export const BottomControlPanelFilm = () => {
   const showPanel = useValue(false);
   const stageState = useSelector((state: RootState) => state.stage);

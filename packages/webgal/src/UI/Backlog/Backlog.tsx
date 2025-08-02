@@ -1,18 +1,15 @@
-import styles from './backlog.module.scss';
+import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { CloseSmall, Return, VolumeNotice } from '@icon-park/react';
-import { jumpFromBacklog } from '@/Core/controller/storage/jumpFromBacklog';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState, webgalStore } from '@/store/store';
 import { setVisibility } from '@/store/GUIReducer';
-import { logger } from '@/Core/util/logger';
-import { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import useTrans from '@/hooks/useTrans';
-import {
-  compileSentence,
-  // EnhancedNode
-} from '@/Stage/TextBox/TextBox';
 import useSoundEffect from '@/hooks/useSoundEffect';
 import { WebGAL } from '@/Core/WebGAL';
+import { jumpFromBacklog } from '@/Core/controller/storage/jumpFromBacklog';
+import { logger } from '@/Core/util/logger';
+import { compileSentence } from '@/Stage/TextBox/TextBox';
+import styles from './backlog.module.scss';
 
 export const Backlog = () => {
   const t = useTrans('gaming.');

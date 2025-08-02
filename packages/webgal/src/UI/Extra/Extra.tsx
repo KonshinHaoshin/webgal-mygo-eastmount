@@ -1,12 +1,12 @@
-import styles from './extra.module.scss';
+import { CloseSmall } from '@icon-park/react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setVisibility } from '@/store/GUIReducer';
-import { CloseSmall } from '@icon-park/react';
-import { ExtraBgm } from '@/UI/Extra/ExtraBgm';
-import { ExtraCg } from './ExtraCg';
 import useTrans from '@/hooks/useTrans';
 import useSoundEffect from '@/hooks/useSoundEffect';
+import { ExtraCg } from './ExtraCg';
+import { ExtraBgm } from './ExtraBgm';
+import styles from './extra.module.scss';
 
 export function Extra() {
   const { playSeClick } = useSoundEffect();

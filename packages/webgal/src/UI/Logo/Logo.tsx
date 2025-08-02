@@ -1,12 +1,8 @@
-import {
-  FC,
-  useEffect,
-  // useRef
-} from 'react';
-import styles from './logo.module.scss';
+import { FC, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useValue } from '@/hooks/useValue';
+import styles from './logo.module.scss';
 
 /**
  * 标识

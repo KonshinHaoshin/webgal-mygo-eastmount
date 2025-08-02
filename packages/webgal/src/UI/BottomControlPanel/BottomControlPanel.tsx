@@ -1,16 +1,4 @@
-import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
-import { backToTitle } from '@/Core/controller/gamePlay/backToTitle';
-import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
-import { loadGame } from '@/Core/controller/storage/loadGame';
-import { saveGame } from '@/Core/controller/storage/saveGame';
-import { showGlogalDialog, switchControls } from '@/UI/GlobalDialog/GlobalDialog';
-import { easyCompile } from '@/UI/Menu/SaveAndLoad/Save/Save';
-import useFullScreen from '@/hooks/useFullScreen';
-import useSoundEffect from '@/hooks/useSoundEffect';
-import useTrans from '@/hooks/useTrans';
-import { setMenuPanelTag, setVisibility } from '@/store/GUIReducer';
-import { componentsVisibility, MenuPanelTag } from '@/store/guiInterface';
-import { RootState } from '@/store/store';
+import { useTranslation } from 'react-i18next';
 import {
   AlignTextLeftOne,
   DoubleDown,
@@ -29,8 +17,20 @@ import {
   SettingTwo,
   Unlock,
 } from '@icon-park/react';
-import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { setMenuPanelTag, setVisibility } from '@/store/GUIReducer';
+import { componentsVisibility, MenuPanelTag } from '@/store/guiInterface';
+import useFullScreen from '@/hooks/useFullScreen';
+import useSoundEffect from '@/hooks/useSoundEffect';
+import useTrans from '@/hooks/useTrans';
+import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
+import { backToTitle } from '@/Core/controller/gamePlay/backToTitle';
+import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
+import { loadGame } from '@/Core/controller/storage/loadGame';
+import { saveGame } from '@/Core/controller/storage/saveGame';
+import { showGlogalDialog, switchControls } from '../GlobalDialog/GlobalDialog';
+import { easyCompile } from '../Menu/SaveAndLoad/Save/Save';
 import styles from './bottomControlPanel.module.scss';
 
 export const BottomControlPanel = () => {
