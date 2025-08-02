@@ -1,4 +1,4 @@
-import { FC } from 'react';
+import { FC, CSSProperties } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { setMenuPanelTag, setVisibility } from '@/store/GUIReducer';
@@ -13,6 +13,8 @@ import { playBgm } from '@/Core/controller/stage/playBgm';
 import { continueGame, startGame } from '@/Core/controller/gamePlay/startContinueGame';
 import { showGlogalDialog } from '../GlobalDialog/GlobalDialog';
 import styles from './title.module.scss';
+import { __INFO } from '@/config/info';
+
 /**
  * 标题页
  * @constructor
@@ -57,7 +59,14 @@ const Title: FC = () => {
             backgroundSize: 'cover',
           }}
         >
-          <div className={applyStyle('Title_buttonList', styles.Title_buttonList)}>
+          <div
+            className={applyStyle('Title_buttonList', styles.Title_buttonList)}
+            style={
+              {
+                '--title-button-gap': GUIState.enableAppreciationMode ? '4rem' : '8rem',
+              } as unknown as CSSProperties
+            }
+          >
             <div
               className={applyStyle('Title_button', styles.Title_button)}
               onClick={() => {
@@ -66,7 +75,12 @@ const Title: FC = () => {
               }}
               onMouseEnter={playSeEnter}
             >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)}>{t('start.title')}</div>
+              <div
+                className={applyStyle('Title_button_text', styles.Title_button_text)}
+                data-content={t('start.title')}
+              >
+                {t('start.title')}
+              </div>
             </div>
             <div
               className={applyStyle('Title_button', styles.Title_button)}
@@ -77,7 +91,12 @@ const Title: FC = () => {
               }}
               onMouseEnter={playSeEnter}
             >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)}>{t('continue.title')}</div>
+              <div
+                className={applyStyle('Title_button_text', styles.Title_button_text)}
+                data-content={t('continue.title')}
+              >
+                {t('continue.title')}
+              </div>
             </div>
             <div
               className={applyStyle('Title_button', styles.Title_button)}
@@ -88,7 +107,12 @@ const Title: FC = () => {
               }}
               onMouseEnter={playSeEnter}
             >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)}>{t('options.title')}</div>
+              <div
+                className={applyStyle('Title_button_text', styles.Title_button_text)}
+                data-content={t('options.title')}
+              >
+                {t('options.title')}
+              </div>
             </div>
             <div
               className={applyStyle('Title_button', styles.Title_button)}
@@ -99,7 +123,9 @@ const Title: FC = () => {
               }}
               onMouseEnter={playSeEnter}
             >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)}>{t('load.title')}</div>
+              <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={t('load.title')}>
+                {t('load.title')}
+              </div>
             </div>
             {GUIState.enableAppreciationMode && (
               <div
@@ -114,7 +140,12 @@ const Title: FC = () => {
                 }}
                 onMouseEnter={playSeEnter}
               >
-                <div className={applyStyle('Title_button_text', styles.Title_button_text)}>{t('extra.title')}</div>
+                <div
+                  className={applyStyle('Title_button_text', styles.Title_button_text)}
+                  data-content={t('extra.title')}
+                >
+                  {t('extra.title')}
+                </div>
               </div>
             )}
             <div
@@ -133,9 +164,17 @@ const Title: FC = () => {
               }}
               onMouseEnter={playSeEnter}
             >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)}>{t('exit.title')}</div>
+              <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={t('exit.title')}>
+                {t('exit.title')}
+              </div>
             </div>
           </div>
+        </div>
+      )}
+      {GUIState.showTitle && (
+        <div className={styles.Title_version_info}>
+          <div>WebGAL BandoriCraft Engine v1.3.1</div>
+          <div>(Based on WebGAL v{__INFO.version})</div>
         </div>
       )}
     </>
