@@ -1,9 +1,7 @@
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { MenuPanelTag } from '@/store/guiInterface';
-import { Save } from './views/SaveAndLoad/Save/Save';
-import { Load } from './views/SaveAndLoad/Load/Load';
-import { Options } from './views/Options/Options';
+import { Save, Load, Options } from './views';
 import { MenuPanel } from './panel';
 import styles from './menu.module.scss';
 

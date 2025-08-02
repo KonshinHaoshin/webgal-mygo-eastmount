@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { initializeScript } from '@/Core/initializeScript';
 import { Stage } from '@/Stage/Stage';
 import {
+  Translation,
   BottomControlPanel,
   BottomControlPanelFilm,
   Backlog,
@@ -17,7 +18,7 @@ import './modern-css-reset.css';
 import './index.scss';
 import './animation.scss';
 
-function App() {
+export default function App() {
   useEffect(() => {
     initializeScript();
   }, []);
@@ -26,6 +27,7 @@ function App() {
   return (
     <div className="App">
       <Stage />
+      <Translation />
       <BottomControlPanel />
       <BottomControlPanelFilm />
       <Backlog />
@@ -39,5 +41,3 @@ function App() {
     </div>
   );
 }
-
-export default App;

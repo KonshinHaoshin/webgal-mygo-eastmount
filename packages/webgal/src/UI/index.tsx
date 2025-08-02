@@ -1,3 +1,4 @@
+export { default as Translation } from './Translation/Translation';
 export { BottomControlPanel } from './BottomControlPanel/BottomControlPanel';
 export { BottomControlPanelFilm } from './BottomControlPanel/BottomControlPanelFilm';
 export { Backlog } from './Backlog/Backlog';
