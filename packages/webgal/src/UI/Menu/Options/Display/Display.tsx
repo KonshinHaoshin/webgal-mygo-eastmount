@@ -1,15 +1,16 @@
-import { setStorage } from '@/Core/controller/storage/storageController';
-import { NormalButton } from '@/UI/Menu/Options/NormalButton';
-import { NormalOption } from '@/UI/Menu/Options/NormalOption';
-import { TextPreview } from '@/UI/Menu/Options/TextPreview/TextPreview';
-import styles from '@/UI/Menu/Options/options.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { textSize } from '@/store/userDataInterface';
+import { setOptionData } from '@/store/userDataReducer';
 import useFullScreen from '@/hooks/useFullScreen';
 import useTrans from '@/hooks/useTrans';
-import { RootState } from '@/store/store';
-import { textFont, textSize } from '@/store/userDataInterface';
-import { setOptionData } from '@/store/userDataReducer';
-import { useDispatch, useSelector } from 'react-redux';
+import { setStorage } from '@/Core/controller/storage/storageController';
+import { NormalButton } from '../NormalButton';
+import { NormalOption } from '../NormalOption';
+import { TextPreview } from '../TextPreview/TextPreview';
 import { OptionSlider } from '../OptionSlider';
+import { CustomSlider } from '../CustomSlider';
+import styles from '../options.module.scss';
 
 export function Display() {
   const userDataState = useSelector((state: RootState) => state.userData);
@@ -48,7 +49,7 @@ export function Display() {
           currentChecked={userDataState.optionData.textSize}
         />
       </NormalOption>
-      <NormalOption key="textFont" title={t('textFont.title')}>
+      {/* <NormalOption key="textFont" title={t('textFont.title')}>
         <NormalButton
           textList={t('textFont.options.siYuanSimSun', 'textFont.options.SimHei', 'textFont.options.lxgw')}
           functionList={[
@@ -67,14 +68,12 @@ export function Display() {
           ]}
           currentChecked={userDataState.optionData.textboxFont}
         />
-      </NormalOption>
+      </NormalOption> */}
       <NormalOption key="textSpeed" title={t('textSpeed.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.textSpeed}
-          uniqueID={t('textSpeed.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'textSpeed', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.textSpeed}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'textSpeed', value: newValue }));
             setStorage();
           }}
         />

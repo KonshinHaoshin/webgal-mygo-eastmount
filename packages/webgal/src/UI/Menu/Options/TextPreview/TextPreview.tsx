@@ -9,7 +9,7 @@ import IMSSTextbox from '@/Stage/TextBox/IMSSTextbox';
 import { compileSentence } from '@/Stage/TextBox/TextBox';
 import { useState } from 'react';
 
-export const TextPreview = (props: any) => {
+export const TextPreview = () => {
   const t = useTrans('menu.options.pages.display.options.');
   const userDataState = useSelector((state: RootState) => state.userData);
   const stageState = useSelector((state: RootState) => state.stage);

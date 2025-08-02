@@ -1,25 +1,27 @@
 import { FC, useEffect } from 'react';
-import styles from './options.module.scss';
-import { getStorage } from '@/Core/controller/storage/storageController';
 import { useValue } from '@/hooks/useValue';
-import { System } from '@/UI/Menu/Options/System/System';
-import { Display } from '@/UI/Menu/Options/Display/Display';
-import { Sound } from '@/UI/Menu/Options/Sound/Sound';
 import useTrans from '@/hooks/useTrans';
 import useSoundEffect from '@/hooks/useSoundEffect';
+import { getStorage } from '@/Core/controller/storage/storageController';
+import { System } from './System/System';
+import { Display } from './Display/Display';
+import { Sound } from './Sound/Sound';
+import titleIcon from '@/assets/image/title-icon.png';
+import styles from './options.module.scss';
 
-enum optionPage {
-  'System',
-  'Display',
-  'Sound',
-}
+const OPTION_PAGE = {
+  SYSTEM: 'SYSTEM',
+  DISPLAY: 'DISPLAY',
+  SOUND: 'SOUND',
+} as const;
 
+type OptionPage = (typeof OPTION_PAGE)[keyof typeof OPTION_PAGE];
 export const Options: FC = () => {
   const { playSeEnter, playSeSwitch } = useSoundEffect();
-  const currentOptionPage = useValue(optionPage.System);
+  const currentOptionPage = useValue(OPTION_PAGE.SYSTEM as OptionPage);
   useEffect(getStorage, []);
 
-  function getClassName(page: optionPage) {
+  function getClassName(page: OptionPage) {
     if (page === currentOptionPage.value) {
       return styles.Options_page_button + ' ' + styles.Options_page_button_active;
     } else return styles.Options_page_button;
@@ -30,6 +32,7 @@ export const Options: FC = () => {
   return (
     <div className={styles.Options_main}>
       <div className={styles.Options_top}>
+        <img className={styles.Options_icon} src={titleIcon} alt="title-icon" />
         <div className={styles.Options_title}>
           <div className={styles.Option_title_text}>{t('title')}</div>
         </div>
@@ -38,39 +41,39 @@ export const Options: FC = () => {
         <div className={styles.Options_button_list}>
           <div
             onClick={() => {
-              currentOptionPage.set(optionPage.System);
+              currentOptionPage.set(OPTION_PAGE.SYSTEM);
               playSeSwitch();
             }}
-            className={getClassName(optionPage.System)}
+            className={getClassName(OPTION_PAGE.SYSTEM)}
             onMouseEnter={playSeEnter}
           >
             {t('pages.system.title')}
           </div>
           <div
             onClick={() => {
-              currentOptionPage.set(optionPage.Display);
+              currentOptionPage.set(OPTION_PAGE.DISPLAY);
               playSeSwitch();
             }}
-            className={getClassName(optionPage.Display)}
+            className={getClassName(OPTION_PAGE.DISPLAY)}
             onMouseEnter={playSeEnter}
           >
             {t('pages.display.title')}
           </div>
           <div
             onClick={() => {
-              currentOptionPage.set(optionPage.Sound);
+              currentOptionPage.set(OPTION_PAGE.SOUND);
               playSeSwitch();
             }}
-            className={getClassName(optionPage.Sound)}
+            className={getClassName(OPTION_PAGE.SOUND)}
             onMouseEnter={playSeEnter}
           >
             {t('pages.sound.title')}
           </div>
         </div>
         <div className={styles.Options_main_content}>
-          {currentOptionPage.value === optionPage.Display && <Display />}
-          {currentOptionPage.value === optionPage.System && <System />}
-          {currentOptionPage.value === optionPage.Sound && <Sound />}
+          {currentOptionPage.value === OPTION_PAGE.DISPLAY && <Display />}
+          {currentOptionPage.value === OPTION_PAGE.SYSTEM && <System />}
+          {currentOptionPage.value === OPTION_PAGE.SOUND && <Sound />}
         </div>
       </div>
     </div>

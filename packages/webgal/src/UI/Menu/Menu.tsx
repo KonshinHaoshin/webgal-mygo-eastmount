@@ -1,4 +1,3 @@
-import { FC } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { MenuPanelTag } from '@/store/guiInterface';
@@ -8,11 +7,8 @@ import { Load } from './SaveAndLoad/Load/Load';
 import { Options } from './Options/Options';
 import styles from './menu.module.scss';
 
-/**
- * Menu 页面，包括存读档、选项等
- * @constructor
- */
-const Menu: FC = () => {
+/** Menu 页面，包括存读档、选项等 */
+export default function Menu() {
   const GUIState = useSelector((state: RootState) => state.GUI);
   let currentTag;
   switch (GUIState.currentMenuTag) {
@@ -42,6 +38,4 @@ const Menu: FC = () => {
       )}
     </>
   );
-};
-
-export default Menu;
+}
