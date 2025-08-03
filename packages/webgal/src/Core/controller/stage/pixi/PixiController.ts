@@ -19,6 +19,7 @@ import { WebGALPixiContainer } from '@/Core/controller/stage/pixi/WebGALPixiCont
 // import { WebGAL } from '@/Core/WebGAL';
 import { SCREEN_CONSTANTS } from '@/Core/util/constants';
 import { addSpineBgImpl, addSpineFigureImpl } from '@/Core/controller/stage/pixi/spine';
+// @ts-ignore
 import { AnimatedGIF } from '@pixi/gif';
 
 export interface IAnimationObject {
@@ -553,12 +554,6 @@ export default class PixiStage {
    * @param presetPosition
    */
   public addFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
-    const ext = this.getExtName(url).toLowerCase();
-    // gif播放
-    if (ext === 'gif') {
-      this.addGifFigure(key, url, presetPosition);
-      return;
-    }
     const loader = this.assetLoader;
     // 准备用于存放这个立绘的 Container
     const thisFigureContainer = new WebGALPixiContainer();
@@ -894,6 +889,90 @@ export default class PixiStage {
     }
   }
   /* eslint-disable complexity */
+  // 添加视频模型
+  public addVideoFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
+    const thisFigureContainer = new WebGALPixiContainer();
+
+    // 移除已有相同 key 的立绘
+    const existingIndex = this.figureObjects.findIndex((e) => e.key === key);
+    if (existingIndex >= 0) {
+      this.removeStageObjectByKey(key);
+    }
+
+    // 设置 zIndex（如果 metadata 有）
+    const metadata = this.getFigureMetadataByKey(key);
+    if (metadata?.zIndex !== undefined) {
+      thisFigureContainer.zIndex = metadata.zIndex;
+    }
+
+    // 添加容器到舞台
+    this.figureContainer.addChild(thisFigureContainer);
+
+    // 注册到立绘对象列表
+    const figureUuid = uuid();
+    this.figureObjects.push({
+      uuid: figureUuid,
+      key,
+      pixiContainer: thisFigureContainer,
+      sourceUrl: url,
+      sourceType: 'video',
+      sourceExt: this.getExtName(url),
+    });
+
+    // 延迟一帧加载避免卡顿
+    setTimeout(() => {
+      const video = document.createElement('video');
+      video.src = url;
+      video.crossOrigin = 'anonymous';
+      video.muted = true;
+      video.loop = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+
+      // 创建 PIXI texture
+      const texture = PIXI.Texture.from(video);
+      const sprite = new PIXI.Sprite(texture);
+
+      // 加载后获取原始宽高
+      video.onloadedmetadata = () => {
+        const originalWidth = video.videoWidth;
+        const originalHeight = video.videoHeight;
+        const scaleX = this.stageWidth / originalWidth;
+        const scaleY = this.stageHeight / originalHeight;
+        const targetScale = Math.min(scaleX, scaleY);
+
+        sprite.scale.set(targetScale);
+        sprite.anchor.set(0.5);
+        sprite.position.y = this.stageHeight / 2;
+
+        const targetWidth = originalWidth * targetScale;
+        const targetHeight = originalHeight * targetScale;
+
+        thisFigureContainer.setBaseY(this.stageHeight / 2);
+        if (targetHeight < this.stageHeight) {
+          thisFigureContainer.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
+        }
+
+        if (presetPosition === 'center') {
+          thisFigureContainer.setBaseX(this.stageWidth / 2);
+        } else if (presetPosition === 'left') {
+          thisFigureContainer.setBaseX(targetWidth / 2);
+        } else if (presetPosition === 'right') {
+          thisFigureContainer.setBaseX(this.stageWidth - targetWidth / 2);
+        }
+
+        thisFigureContainer.pivot.set(0, this.stageHeight / 2);
+        thisFigureContainer.addChild(sprite);
+      };
+
+      // 错误处理
+      video.onerror = (e) => {
+        console.error('视频加载失败喵！', e);
+      };
+    }, 0);
+  }
+
   /**
    * Live2d立绘，如果要使用 Live2D，取消这里的注释
    * @param jsonPath
