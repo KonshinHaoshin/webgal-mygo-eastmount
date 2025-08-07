@@ -9,6 +9,8 @@ import { BevelFilter } from '@/Core/controller/stage/pixi/shaders/BevelFilter';
 import * as PIXI from 'pixi.js';
 import { BlurFilter } from '@pixi/filter-blur';
 import { INIT_RAD, RadiusAlphaFilter } from '@/Core/controller/stage/pixi/shaders/RadiusAlphaFilter';
+import { assetSetter, fileType } from '@/Core/util/gameAssetsAccess/assetSetter';
+import { CustomColorMapFilter } from './shaders/CustomColorMapFilter';
 
 /**
  * Filter configuration for creation and default state detection.
@@ -22,14 +24,34 @@ interface FilterConfig {
 /**
  * Property configuration for mapping class properties to filter effects.
  */
-interface PropertyConfig {
+// interface PropertyConfig {
+//   filterName: string;
+//   filterProperty?: string;
+//   defaultValue: number;
+//   isBoolean?: boolean;
+//   overrideSet?: (value: number, filter: PIXI.Filter, container: WebGALPixiContainer) => void;
+//   overrideGet?: (filter: PIXI.Filter | undefined, defaultValue: number, container: WebGALPixiContainer) => number;
+// }
+
+// LUT SUPPORT MODIFY
+type PropertyValue = number | string;
+
+// LUT SUPPORT MODIFY
+// 现在需要支持 string，添加 type 联合类型。
+interface PropertyConfig<T extends PropertyValue = number> {
   filterName: string;
+  // LUT SUPPORT MODIFY
+  type: 'number' | 'string' | 'boolean';
+  defaultValue: T;
   filterProperty?: string;
-  defaultValue: number;
-  isBoolean?: boolean;
-  overrideSet?: (value: number, filter: PIXI.Filter, container: WebGALPixiContainer) => void;
-  overrideGet?: (filter: PIXI.Filter | undefined, defaultValue: number, container: WebGALPixiContainer) => number;
+  // LUT SUPPORT MODIFY
+  overrideSet?: (value: T, filter: PIXI.Filter, container: WebGALPixiContainer) => void;
+  // LUT SUPPORT MODIFY
+  overrideGet?: (filter: PIXI.Filter | undefined, defaultValue: T, container: WebGALPixiContainer) => T;
 }
+
+// LUT SUPPORT MODIFY
+type PropertyConfigs = Record<string, PropertyConfig<any>>;
 
 // 滤镜顺序，靠上滤镜的排滤镜数组后面(在上层)
 const enum FilterPriority {
@@ -44,6 +66,9 @@ const enum FilterPriority {
   Bloom,
   GodrayFilm,
   Bevel,
+  // LUT SUPPORT MODIFY
+  // 这里随便找了个地方放，实则优先级有待讨论
+  ColorMap,
   Adjustment,
 }
 
@@ -164,35 +189,71 @@ const FILTER_CONFIGS: Record<string, FilterConfig> = {
       return ab.bloomScale === 0 && ab.brightness === 1 && ab.blur === 0 && ab.threshold === 0;
     },
   },
+  // LUT SUPPORT MODIFY
+  colorMap: {
+    priority: FilterPriority.ColorMap,
+    create: () => {
+      // 这里不可能为 ''（会导致报错），需要考虑之后引擎自带一个 template 色彩映射贴图
+      // const colormapTexture = PIXI.Texture.from('');
+      // 这里使用 Pixi.JS 自带的 template 色彩映射贴图（GitHub）
+      // 网络加载会导致可能的延迟，更建议使用本地资源
+      const template =
+        'https://raw.githubusercontent.com/pixijs/filters/refs/heads/v5.x/filters/color-map/colormap-template-16.png';
+
+      const colormapTexture = PIXI.Texture.from(template);
+
+      const f = new CustomColorMapFilter(colormapTexture);
+      f.mix = 0;
+      return f;
+    },
+    isDefault: (f) => {
+      const template =
+        'https://raw.githubusercontent.com/pixijs/filters/refs/heads/v5.x/filters/color-map/colormap-template-16.png';
+
+      const cmap = f as CustomColorMapFilter;
+      // 这里同理
+      // return cmap.mix === 0 && cmap.colorMap === '';
+      return cmap.mix === 0 && cmap.colorMap === template;
+    },
+  },
 };
 
-const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
+// LUT SUPPORT MODIFY
+// Record<string, PropertyConfig> -> PropertyConfigs
+// 以下全部加上 type 属性
+const PROPERTY_CONFIGS: PropertyConfigs = {
   blur: {
+    type: 'number',
     filterName: 'blur',
     filterProperty: 'blur',
     defaultValue: 0,
   },
   brightness: {
+    type: 'number',
     filterName: 'adjustment',
     filterProperty: 'brightness',
     defaultValue: 1,
   },
   contrast: {
+    type: 'number',
     filterName: 'adjustment',
     filterProperty: 'contrast',
     defaultValue: 1,
   },
   saturation: {
+    type: 'number',
     filterName: 'adjustment',
     filterProperty: 'saturation',
     defaultValue: 1,
   },
   gamma: {
+    type: 'number',
     filterName: 'adjustment',
     filterProperty: 'gamma',
     defaultValue: 1,
   },
   colorRed: {
+    type: 'number',
     filterName: 'adjustment',
     defaultValue: 255,
     overrideSet: (value, filter) => {
@@ -201,6 +262,7 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
     overrideGet: (filter, defaultValue) => (filter ? (filter as AdjustmentFilter).red * 255 : defaultValue),
   },
   colorGreen: {
+    type: 'number',
     filterName: 'adjustment',
     defaultValue: 255,
     overrideSet: (value, filter) => {
@@ -209,6 +271,7 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
     overrideGet: (filter, defaultValue) => (filter ? (filter as AdjustmentFilter).green * 255 : defaultValue),
   },
   colorBlue: {
+    type: 'number',
     filterName: 'adjustment',
     defaultValue: 255,
     overrideSet: (value, filter) => {
@@ -216,19 +279,21 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
     },
     overrideGet: (filter, defaultValue) => (filter ? (filter as AdjustmentFilter).blue * 255 : defaultValue),
   },
-  oldFilm: { filterName: 'oldFilm', defaultValue: 0, isBoolean: true },
-  dotFilm: { filterName: 'dotFilm', defaultValue: 0, isBoolean: true },
-  reflectionFilm: { filterName: 'reflectionFilm', defaultValue: 0, isBoolean: true },
-  glitchFilm: { filterName: 'glitchFilm', defaultValue: 0, isBoolean: true },
-  rgbFilm: { filterName: 'rgbFilm', defaultValue: 0, isBoolean: true },
-  godrayFilm: { filterName: 'godrayFilm', defaultValue: 0, isBoolean: true },
+  oldFilm: { filterName: 'oldFilm', defaultValue: 0, type: 'boolean' },
+  dotFilm: { filterName: 'dotFilm', defaultValue: 0, type: 'boolean' },
+  reflectionFilm: { filterName: 'reflectionFilm', defaultValue: 0, type: 'boolean' },
+  glitchFilm: { filterName: 'glitchFilm', defaultValue: 0, type: 'boolean' },
+  rgbFilm: { filterName: 'rgbFilm', defaultValue: 0, type: 'boolean' },
+  godrayFilm: { filterName: 'godrayFilm', defaultValue: 0, type: 'boolean' },
   shockwaveFilter: {
+    type: 'number',
     // Public property name
     filterName: 'shockwave', // Key in FILTER_CONFIGS
     filterProperty: 'time', // Property on ShockwaveFilter instance
     defaultValue: 0,
   },
   radiusAlphaFilter: {
+    type: 'number',
     // Public property name
     filterName: 'radiusAlpha', // Key in FILTER_CONFIGS
     filterProperty: 'radius', // Property on RadiusAlphaFilter instance
@@ -236,26 +301,31 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
   },
   // Bevel Filter Properties
   bevel: {
+    type: 'number',
     filterName: 'bevel',
     filterProperty: 'lightAlpha', // 'bevel' 公开属性映射到 lightAlpha
     defaultValue: 0,
   },
   bevelThickness: {
+    type: 'number',
     filterName: 'bevel',
     filterProperty: 'thickness',
     defaultValue: 0,
   },
   bevelRotation: {
+    type: 'number',
     filterName: 'bevel',
     filterProperty: 'rotation',
     defaultValue: 0,
   },
   bevelSoftness: {
+    type: 'number',
     filterName: 'bevel',
     filterProperty: 'softness',
     defaultValue: 0,
   },
   bevelRed: {
+    type: 'number',
     filterName: 'bevel',
     defaultValue: 255,
     overrideSet: (value, filter) => {
@@ -272,6 +342,7 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
     },
   },
   bevelGreen: {
+    type: 'number',
     filterName: 'bevel',
     defaultValue: 255,
     overrideSet: (value, filter) => {
@@ -288,6 +359,7 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
     },
   },
   bevelBlue: {
+    type: 'number',
     filterName: 'bevel',
     defaultValue: 255,
     overrideSet: (value, filter) => {
@@ -306,24 +378,88 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
 
   // Advanced Bloom Filter Properties
   bloom: {
+    type: 'number',
     filterName: 'bloom',
     filterProperty: 'bloomScale', // 'bloom' 公开属性映射到 bloomScale
     defaultValue: 0,
   },
   bloomBrightness: {
+    type: 'number',
     filterName: 'bloom',
     filterProperty: 'brightness',
     defaultValue: 1,
   },
   bloomBlur: {
+    type: 'number',
     filterName: 'bloom',
     filterProperty: 'blur',
     defaultValue: 0,
   },
   bloomThreshold: {
+    type: 'number',
     filterName: 'bloom',
     filterProperty: 'threshold',
     defaultValue: 0,
+  },
+  // LUT SUPPORT MODIFY
+  colorMapFile: {
+    type: 'string',
+    filterName: 'colorMap',
+    filterProperty: 'colorMapFile',
+    defaultValue:
+      'https://raw.githubusercontent.com/pixijs/filters/refs/heads/v5.x/filters/color-map/colormap-template-16.png',
+    overrideSet: (value: string, filter: PIXI.Filter) => {
+      console.log(`Setting colorMapUrl to ${value}`);
+      const cmapFilter = filter as CustomColorMapFilter;
+      const defaultValue =
+        'https://raw.githubusercontent.com/pixijs/filters/refs/heads/v5.x/filters/color-map/colormap-template-16.png';
+
+      // 因为现在多类型了，一定要进行一次类型检查。
+      // 现在先放在这里，之后可以对 _getPropertyValue() 进行修改，添加类型检查逻辑。
+      if (typeof value !== 'string') {
+        cmapFilter.colorMap = assetSetter(defaultValue, fileType.background);
+        return;
+      }
+
+      if (value) {
+        const resolvedUrl = assetSetter(value, fileType.background);
+        cmapFilter.colorMap = resolvedUrl;
+      } else {
+        cmapFilter.colorMap = assetSetter(defaultValue, fileType.background);
+      }
+    },
+    overrideGet: (filter: PIXI.Filter | undefined, defaultValue: string) => {
+      if (filter) {
+        const cmapFilter = filter as CustomColorMapFilter;
+        const colorMapTexture = cmapFilter.colorMap as PIXI.Texture;
+
+        // PIXI.Texture.from() 会将 URL 作为缓存 ID。
+        // 我们可以通过 textureCacheIds 数组来取回这个原始 URL。
+        if (colorMapTexture?.textureCacheIds && colorMapTexture.textureCacheIds.length > 0) {
+          return colorMapTexture.textureCacheIds[0];
+        }
+      }
+      // 如果获取不到，则返回默认的 URL。
+      return defaultValue;
+    },
+  },
+  // 控制颜色映射的混合
+  colorMapMix: {
+    type: 'number',
+    filterName: 'colorMap',
+    filterProperty: 'colorMapMix',
+    defaultValue: 0,
+    overrideSet(value: number, filter: PIXI.Filter) {
+      const cmapFilter = filter as CustomColorMapFilter;
+      cmapFilter.mix = value;
+    },
+    overrideGet(filter: PIXI.Filter | undefined, defaultValue: number) {
+      if (filter) {
+        const cmapFilter = filter as CustomColorMapFilter;
+        return cmapFilter.mix;
+      }
+      return defaultValue;
+    },
   },
 };
 
@@ -554,6 +690,26 @@ export class WebGALPixiContainer extends PIXI.Container {
     this._setPropertyValue('bloomThreshold', v);
   }
 
+  // LUT SUPPORT MODIFY
+  public get colorMapFile(): string {
+    return this._getPropertyValue('colorMapFile');
+  }
+
+  // LUT SUPPORT MODIFY
+  public set colorMapFile(v: string) {
+    this._setPropertyValue('colorMapFile', v);
+  }
+
+  // LUT SUPPORT MODIFY
+  public get colorMapMix(): number {
+    return this._getPropertyValue('colorMapMix');
+  }
+
+  // LUT SUPPORT MODIFY
+  public set colorMapMix(v: number) {
+    this._setPropertyValue('colorMapMix', v);
+  }
+
   private removeIfDefault(filterName: string) {
     const inst = this.containerFilters.get(filterName);
     const cfg = FILTER_CONFIGS[filterName];
@@ -562,45 +718,120 @@ export class WebGALPixiContainer extends PIXI.Container {
     }
   }
 
-  private _getPropertyValue(propertyName: string): number {
-    const propConfig = PROPERTY_CONFIGS[propertyName];
-    if (!propConfig) {
-      console.warn(`WebGALPixiContainer: Unknown property configuration for getter: ${propertyName}`);
-      return 0;
+  // private _getPropertyValue(propertyName: string): number {
+  //   const propConfig = PROPERTY_CONFIGS[propertyName];
+  //   if (!propConfig) {
+  //     console.warn(`WebGALPixiContainer: Unknown property configuration for getter: ${propertyName}`);
+  //     return 0;
+  //   }
+  //   if (propConfig.isBoolean) {
+  //     return this.containerFilters.has(propConfig.filterName) ? 1 : 0;
+  //   }
+  //   const filterInstance = this.containerFilters.get(propConfig.filterName);
+  //   if (propConfig.overrideGet) {
+  //     return propConfig.overrideGet(filterInstance, propConfig.defaultValue, this);
+  //   }
+  //   if (filterInstance && propConfig.filterProperty) {
+  //     return (filterInstance as any)[propConfig.filterProperty];
+  //   }
+  //   return propConfig.defaultValue;
+  // }
+
+  // private _setPropertyValue(propertyName: string, value: number): void {
+  //   const propConfig = PROPERTY_CONFIGS[propertyName];
+  //   if (!propConfig) {
+  //     console.warn(`WebGALPixiContainer: Unknown property configuration for setter: ${propertyName}`);
+  //     return;
+  //   }
+  //   if (propConfig.isBoolean) {
+  //     if (value === 0 || value === undefined || value === null) {
+  //       this.removeFilterByName(propConfig.filterName);
+  //     } else {
+  //       if (!this.containerFilters.has(propConfig.filterName)) {
+  //         this.ensureFilterByName(propConfig.filterName);
+  //       }
+  //     }
+  //     return;
+  //   }
+  //   if (value === propConfig.defaultValue && !this.containerFilters.has(propConfig.filterName)) {
+  //     return;
+  //   }
+  //   const filterInstance = this.ensureFilterByName<any>(propConfig.filterName);
+  //   if (propConfig.overrideSet) {
+  //     propConfig.overrideSet(value, filterInstance, this);
+  //   } else if (propConfig.filterProperty) {
+  //     (filterInstance as any)[propConfig.filterProperty] = value;
+  //   } else {
+  //     console.warn(
+  //       `WebGALPixiContainer: Property '${propertyName}' has neither overrideSet nor filterProperty defined for value setting.`,
+  //     );
+  //   }
+  //   this.removeIfDefault(propConfig.filterName);
+  // }
+
+  // LUT SUPPORT MODIFY
+  // 新的 _getPropertyValue，感谢万能的 AI，但还是不能相信，估计还得改。
+  private _getPropertyValue<T extends PropertyValue>(propertyName: string): T {
+    const propConfig = PROPERTY_CONFIGS[propertyName] as PropertyConfig<T> | undefined;
+
+    if (propConfig) {
+      // 对布尔类型的特殊处理
+      if (propConfig.type === 'boolean') {
+        return (this.containerFilters.has(propConfig.filterName) ? 1 : 0) as T;
+      }
+
+      const filterInstance = this.containerFilters.get(propConfig.filterName);
+
+      // 如果有自定义的 getter，则使用它
+      if (propConfig.overrideGet) {
+        return propConfig.overrideGet(filterInstance, propConfig.defaultValue, this);
+      }
+
+      // 如果滤镜实例存在且属性已映射，返回滤镜上的当前值
+      if (filterInstance && propConfig.filterProperty) {
+        return (filterInstance as any)[propConfig.filterProperty];
+      }
+
+      // 如果滤镜不存在或没有可映射的属性，返回配置中的默认值
+      return propConfig.defaultValue;
     }
-    if (propConfig.isBoolean) {
-      return this.containerFilters.has(propConfig.filterName) ? 1 : 0;
-    }
-    const filterInstance = this.containerFilters.get(propConfig.filterName);
-    if (propConfig.overrideGet) {
-      return propConfig.overrideGet(filterInstance, propConfig.defaultValue, this);
-    }
-    if (filterInstance && propConfig.filterProperty) {
-      return (filterInstance as any)[propConfig.filterProperty];
-    }
-    return propConfig.defaultValue;
+
+    console.warn(`WebGALPixiContainer: Unknown property configuration for getter: ${propertyName}`);
+
+    // 由于找不到 propConfig，我们无法知道预期的默认值是数字还是字符串。
+    // 返回一个通用的“空”值并强制转换为 T 是一个务实的折衷方案。
+    // 控制台的警告是提醒开发人员修复问题的关键。
+    return 0 as T;
   }
 
-  private _setPropertyValue(propertyName: string, value: number): void {
-    const propConfig = PROPERTY_CONFIGS[propertyName];
+  private _setPropertyValue<T extends PropertyValue>(propertyName: string, value: T): void {
+    const propConfig = PROPERTY_CONFIGS[propertyName] as PropertyConfig<T> | undefined;
     if (!propConfig) {
       console.warn(`WebGALPixiContainer: Unknown property configuration for setter: ${propertyName}`);
       return;
     }
-    if (propConfig.isBoolean) {
-      if (value === 0 || value === undefined || value === null) {
+
+    // 处理布尔类型滤镜的逻辑
+    if (propConfig.type === 'boolean') {
+      // 值为0, undefined, null, 或空字符串时移除滤镜
+      if (!value) {
         this.removeFilterByName(propConfig.filterName);
       } else {
+        // 否则确保滤镜存在
         if (!this.containerFilters.has(propConfig.filterName)) {
           this.ensureFilterByName(propConfig.filterName);
         }
       }
       return;
     }
+
+    // 如果值等于默认值且滤镜尚未创建，则无需任何操作
     if (value === propConfig.defaultValue && !this.containerFilters.has(propConfig.filterName)) {
       return;
     }
+
     const filterInstance = this.ensureFilterByName<any>(propConfig.filterName);
+
     if (propConfig.overrideSet) {
       propConfig.overrideSet(value, filterInstance, this);
     } else if (propConfig.filterProperty) {
@@ -610,6 +841,8 @@ export class WebGALPixiContainer extends PIXI.Container {
         `WebGALPixiContainer: Property '${propertyName}' has neither overrideSet nor filterProperty defined for value setting.`,
       );
     }
+
+    // 检查是否应该移除滤镜（如果它的所有属性都回到了默认状态）
     this.removeIfDefault(propConfig.filterName);
   }
 

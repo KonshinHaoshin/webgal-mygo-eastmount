@@ -59,6 +59,9 @@ export interface ITransform {
   bloomThreshold: number;
   shockwaveFilter: number;
   radiusAlphaFilter: number;
+  // LUT SUPPORT MODIFY
+  colorMapFile: string;
+  colorMapMix: number;
 }
 
 /**
@@ -109,6 +112,11 @@ export const baseTransform: ITransform = {
   bloomThreshold: 0,
   shockwaveFilter: 0,
   radiusAlphaFilter: 0,
+  // LUT SUPPORT MODIFY
+  // 如果引擎可以自带一个 template color map，则填写 template color map 的文件路径即可
+  // 目前 WebGALPixiController 那边使用的是 github raw 源
+  colorMapFile: '',
+  colorMapMix: 0,
 };
 
 export interface IFreeFigure {
