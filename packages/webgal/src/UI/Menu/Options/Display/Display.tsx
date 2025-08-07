@@ -9,7 +9,7 @@ import { RootState } from '@/store/store';
 import { textFont, textSize } from '@/store/userDataInterface';
 import { setOptionData } from '@/store/userDataReducer';
 import { useDispatch, useSelector } from 'react-redux';
-import { OptionSlider } from '../OptionSlider';
+import { CustomSlider } from '@/UI/Menu/Options/CustomSlider';
 
 export function Display() {
   const userDataState = useSelector((state: RootState) => state.userData);
@@ -48,7 +48,7 @@ export function Display() {
           currentChecked={userDataState.optionData.textSize}
         />
       </NormalOption>
-      <NormalOption key="textFont" title={t('textFont.title')}>
+      {/* <NormalOption key="textFont" title={t('textFont.title')}>
         <NormalButton
           textList={t('textFont.options.siYuanSimSun', 'textFont.options.SimHei', 'textFont.options.lxgw')}
           functionList={[
@@ -67,19 +67,17 @@ export function Display() {
           ]}
           currentChecked={userDataState.optionData.textboxFont}
         />
-      </NormalOption>
+      </NormalOption> */}
       <NormalOption key="textSpeed" title={t('textSpeed.title')}>
-        <OptionSlider
-          initValue={userDataState.optionData.textSpeed}
-          uniqueID={t('textSpeed.title')}
-          onChange={(event) => {
-            const newValue = event.target.value;
-            dispatch(setOptionData({ key: 'textSpeed', value: Number(newValue) }));
+        <CustomSlider
+          value={userDataState.optionData.textSpeed}
+          onChange={(newValue) => {
+            dispatch(setOptionData({ key: 'textSpeed', value: newValue }));
             setStorage();
           }}
         />
       </NormalOption>
-      <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
+      {/* <NormalOption key="textboxOpacity" title={t('textboxOpacity.title')}>
         <OptionSlider
           initValue={userDataState.optionData.textboxOpacity}
           uniqueID={t('textboxOpacity.title')}
@@ -89,7 +87,7 @@ export function Display() {
             setStorage();
           }}
         />
-      </NormalOption>
+      </NormalOption> */}
       <NormalOption full key="textPreview" title={t('textPreview.title')}>
         {/* 这是一个临时的组件，用于模拟文本预览的效果 */}
         <TextPreview />

@@ -18,7 +18,7 @@ import { WebGAL } from '@/Core/WebGAL';
 import useSoundEffect from '@/hooks/useSoundEffect';
 import savesReducer, { ISavesData, saveActions } from '@/store/savesReducer';
 import { dumpFastSaveToStorage, dumpSavesToStorage } from '@/Core/controller/storage/savesController';
-import { OptionSlider } from '@/UI/Menu/Options/OptionSlider';
+import { CustomSlider } from '@/UI/Menu/Options/CustomSlider';
 import { Info } from '@icon-park/react';
 
 interface IExportGameData {
@@ -106,12 +106,10 @@ export function System() {
       {!showAbout && (
         <>
           <NormalOption key="option1" title={t('autoSpeed.title')}>
-            <OptionSlider
-              initValue={userDataState.optionData.autoSpeed}
-              uniqueID={t('autoSpeed.title')}
-              onChange={(event) => {
-                const newValue = event.target.value;
-                dispatch(setOptionData({ key: 'autoSpeed', value: Number(newValue) }));
+            <CustomSlider
+              value={userDataState.optionData.autoSpeed}
+              onChange={(newValue: number) => {
+                dispatch(setOptionData({ key: 'autoSpeed', value: newValue }));
                 setStorage();
               }}
             />
