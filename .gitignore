@@ -28,7 +28,7 @@ stats.html
 packages/webgal/public/game.old
 packages/parser/build
 packages/webgal/src/Core/util/pixiPerformManager/initRegister.ts
+
 packages/webgal/public/game/figure/**/*
-!packages/webgal/public/game/figure/logos.png
+!logos.webp
 packages/webgal/public/lib/**/*
-!packages/webgal/public/lib/index.js
