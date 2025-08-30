@@ -6,3 +6,4 @@ Game_Logo:WebGAL_MyGO_Enter.webp;
 Default_Language:zh_CN;
 Show_panic:true;
 Enable_Appreciation:true;
+Legacy_Expression_Blend_Mode:true;
