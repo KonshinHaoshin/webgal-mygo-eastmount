@@ -1,9 +1,9 @@
 {
-  "name": "WebGAL MYGO Engine",
-  "short_name": "WebGAL MYGO",
+  "name": "WebGAL MyGO Engine",
+  "short_name": "WebGAL MyGO",
   "start_url": ".",
   "display": "fullscreen",
-  "description": "WebGAL MYGO DEMO",
+  "description": "WebGAL MyGO Demo",
   "dir": "auto",
   "orientation": "landscape",
   "icons": [
