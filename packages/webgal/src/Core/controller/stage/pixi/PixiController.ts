@@ -103,6 +103,8 @@ export default class PixiStage {
   private stageAnimations: Array<IStageAnimationObject> = [];
   private loadQueue: { url: string; callback: () => void; name?: string }[] = [];
   private live2dFigureRecorder: Array<ILive2DRecord> = [];
+  // 存储当前口型值，用于在motion更新后重新应用
+  private currentMouthValues: Map<string, number> = new Map();
   // 锁定变换对象（对象可能正在执行动画，不能应用变换）
   private lockTransformTarget: Array<string> = [];
 
@@ -1083,6 +1085,16 @@ export default class PixiStage {
               // lip-sync is still a problem and you can not.
               Live2D.SoundManager.volume = 0; // @ts-ignore
 
+              // 监听模型更新事件，确保口型参数不被motion覆盖
+              // @ts-ignore
+              model.internalModel.on('beforeModelUpdate', () => {
+                // 获取当前的口型值并重新应用
+                const currentMouthValue = instance.getCurrentMouthValue(key);
+                if (currentMouthValue !== null) {
+                  instance.setModelMouthY(key, currentMouthValue);
+                }
+              });
+
               thisFigureContainer.addChild(model);
             });
           })();
@@ -1234,7 +1246,17 @@ export default class PixiStage {
             model?.internalModel?.coreModel?.setParameterValueById('ParamMouthOpenY', paramY);
         }
       }
-    }
+    } // 存储当前口型值
+    this.currentMouthValues.set(key, y);
+  }
+
+  /**
+   * 获取当前口型值
+   * @param key 角色key
+   * @returns 口型值，如果没有则返回null
+   */
+  public getCurrentMouthValue(key: string): number | null {
+    return this.currentMouthValues.get(key) ?? null;
   }
 
   /**
