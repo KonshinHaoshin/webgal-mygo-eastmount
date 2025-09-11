@@ -13,7 +13,6 @@ export enum fileType {
   tex,
   vocal,
   video,
-  lut,
 }
 
 /**
@@ -47,9 +46,6 @@ export const assetSetter = (fileName: string, assetType: fileType): string => {
         break;
       case fileType.video:
         returnFilePath = `./game/video/${fileName}`;
-        break;
-      case fileType.lut:
-        returnFilePath = `./game/lut/${fileName}`;
         break;
       default:
         returnFilePath = ``;

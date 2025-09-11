@@ -9,7 +9,6 @@ import { BevelFilter } from '@/Core/controller/stage/pixi/shaders/BevelFilter';
 import * as PIXI from 'pixi.js';
 import { BlurFilter } from '@pixi/filter-blur';
 import { INIT_RAD, RadiusAlphaFilter } from '@/Core/controller/stage/pixi/shaders/RadiusAlphaFilter';
-import { CustomColorMapFilter as ColorMapFilter } from '@/Core/controller/stage/pixi/shaders/CustomColorMapFilter';
 
 /**
  * Filter configuration for creation and default state detection.
@@ -46,7 +45,6 @@ const enum FilterPriority {
   GodrayFilm,
   Bevel,
   Adjustment,
-  ColorMap,
 }
 
 const FILTER_CONFIGS: Record<string, FilterConfig> = {
@@ -165,11 +163,6 @@ const FILTER_CONFIGS: Record<string, FilterConfig> = {
       const ab = f as AdvancedBloomFilter;
       return ab.bloomScale === 0 && ab.brightness === 1 && ab.blur === 0 && ab.threshold === 0;
     },
-  },
-  colorMap: {
-    priority: FilterPriority.ColorMap,
-    create: () => new ColorMapFilter(null, false),
-    isDefault: (f) => !(f as ColorMapFilter).colorMap,
   },
 };
 
@@ -331,15 +324,6 @@ const PROPERTY_CONFIGS: Record<string, PropertyConfig> = {
     filterName: 'bloom',
     filterProperty: 'threshold',
     defaultValue: 0,
-  },
-  // Color Map (LUT) properties
-  colorMapIntensity: {
-    filterName: 'colorMap',
-    defaultValue: 1,
-    overrideSet: (value, filter) => {
-      (filter as ColorMapFilter).mix = value;
-    },
-    overrideGet: (filter, defaultValue) => (filter ? (filter as ColorMapFilter).mix : defaultValue),
   },
 };
 
@@ -570,22 +554,6 @@ export class WebGALPixiContainer extends PIXI.Container {
     this._setPropertyValue('bloomThreshold', v);
   }
 
-  // --- Color Map (LUT) ---
-  public setColorMapTexture(texture: PIXI.Texture | null) {
-    if (!texture) {
-      this.removeFilterByName('colorMap');
-      return;
-    }
-    const filter = this.ensureFilterByName<ColorMapFilter>('colorMap');
-    filter.colorMap = texture;
-  }
-  public get colorMapIntensity(): number {
-    return this._getPropertyValue('colorMapIntensity');
-  }
-  public set colorMapIntensity(v: number) {
-    this._setPropertyValue('colorMapIntensity', v);
-  }
-
   private removeIfDefault(filterName: string) {
     const inst = this.containerFilters.get(filterName);
     const cfg = FILTER_CONFIGS[filterName];
@@ -674,8 +642,7 @@ export class WebGALPixiContainer extends PIXI.Container {
     this.filterToName.set(filter, name);
   }
 
-  // eslint-disable-next-line @typescript-eslint/member-ordering
-  public ensureFilterByName<T extends PIXI.Filter>(filterName: string): T {
+  private ensureFilterByName<T extends PIXI.Filter>(filterName: string): T {
     let inst = this.containerFilters.get(filterName) as T | undefined;
     if (inst) return inst;
     const cfg = FILTER_CONFIGS[filterName];
