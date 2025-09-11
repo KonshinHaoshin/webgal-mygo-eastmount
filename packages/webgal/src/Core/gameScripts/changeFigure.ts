@@ -87,10 +87,31 @@ export function changeFigure(sentence: ISentence): IPerform {
   // 其他参数
   const transformString = getStringArgByKey(sentence, 'transform');
   const ease = getStringArgByKey(sentence, 'ease') ?? '';
-  let duration = getNumberArgByKey(sentence, 'duration') ?? 500;
+  let duration = getNumberArgByKey(sentence, 'duration') ?? 50;
   const enterAnimation = getStringArgByKey(sentence, 'enter');
   const exitAnimation = getStringArgByKey(sentence, 'exit');
   let zIndex = getNumberArgByKey(sentence, 'zIndex') ?? -1;
+
+  // 视频形式立绘，允许 'true' | 'false' | 'disappear'
+  const loopArg = getStringArgByKey(sentence, 'loop') ?? 'true';
+
+  // LUT 参数
+  const lutArg = getStringArgByKey(sentence, 'lut');
+  console.log('[LUT Debug] changeFigure LUT arg:', { lutArg, lutArgType: typeof lutArg, lutArgLength: lutArg?.length });
+  if (lutArg !== null) {
+    if (lutArg === '') {
+      // 明确传入空字符串，清除 LUT
+      console.log('[LUT Debug] Setting lut to empty string to clear LUT');
+      webgalStore.dispatch(stageActions.setFigureMetaData([id, 'lut', '', false]));
+    } else {
+      // 传入具体的 LUT 文件路径
+      console.log('[LUT Debug] Setting lut to file path:', lutArg);
+      webgalStore.dispatch(stageActions.setFigureMetaData([id, 'lut', assetSetter(lutArg, fileType.lut), false]));
+    }
+  } else {
+    console.log('[LUT Debug] No lut parameter, keeping existing LUT');
+  }
+  // 如果没有 -lut 参数，保持现有 LUT 不变
 
   const dispatch = webgalStore.dispatch;
 
@@ -209,6 +230,7 @@ export function changeFigure(sentence: ISentence): IPerform {
       dispatch(stageActions.setLive2dBlink({ target: key, blink }));
       dispatch(stageActions.setLive2dFocus({ target: key, focus }));
       dispatch(stageActions.setFigureMetaData([key, 'zIndex', zIndex, false]));
+      dispatch(stageActions.setFigureMetaData([key, 'loop', loopArg, false]));
     } else {
       // 当 url 没有发生变化时，即没有新立绘替换
       // 应当保留旧立绘的状态，仅在需要时更新
@@ -218,53 +240,45 @@ export function changeFigure(sentence: ISentence): IPerform {
       if (expression) {
         dispatch(stageActions.setLive2dExpression({ target: key, expression }));
       }
-      if (blink) {
-        dispatch(stageActions.setLive2dBlink({ target: key, blink }));
-      }
-      if (focus) {
-        dispatch(stageActions.setLive2dFocus({ target: key, focus }));
-      }
-      if (zIndex >= 0) {
-        dispatch(stageActions.setFigureMetaData([key, 'zIndex', zIndex, false]));
-      }
     }
   }
 
   if (isFreeFigure) {
-    /**
-     * 下面的代码是设置自由立绘的
-     */
-    const freeFigureItem: IFreeFigure = { key, name: content, basePosition: pos };
-    setAnimationNames(key, sentence);
-    setFigureData();
-    dispatch(stageActions.setFreeFigureByKey(freeFigureItem));
-  } else {
-    /**
-     * 下面的代码是设置与位置关联的立绘的
-     */
-    const positionMap = {
-      center: 'fig-center',
-      left: 'fig-left',
-      right: 'fig-right',
-    };
-    const dispatchMap: Record<string, keyof IStageState> = {
-      center: 'figName',
-      left: 'figNameLeft',
-      right: 'figNameRight',
-    };
+    // 在这里设置自由立绘
+    const freeFigure = webgalStore.getState().stage.freeFigure;
+    const currentFigureCount = freeFigure.filter((e) => e.key === id).length;
 
-    key = positionMap[pos];
-    setAnimationNames(key, sentence);
+    let figPos: 'center' | 'left' | 'right' = 'center';
+    if (pos === 'center') figPos = 'center';
+    if (pos === 'left') figPos = 'left';
+    if (pos === 'right') figPos = 'right';
+    if (currentFigureCount === 0) {
+      dispatch(stageActions.setFreeFigureByKey({ basePosition: figPos, key: id, name: content } satisfies IFreeFigure));
+    } else {
+      dispatch(stageActions.setFreeFigureByKey({ basePosition: figPos, key: id, name: content } satisfies IFreeFigure));
+    }
+    setAnimationNames(id, sentence);
     setFigureData();
-    dispatch(setStage({ key: dispatchMap[pos], value: content }));
+  } else {
+    if (pos === 'center') {
+      dispatch(setStage({ key: 'figName', value: content }));
+      setAnimationNames('fig-center', sentence);
+    } else if (pos === 'left') {
+      dispatch(setStage({ key: 'figNameLeft', value: content }));
+      setAnimationNames('fig-left', sentence);
+    } else if (pos === 'right') {
+      dispatch(setStage({ key: 'figNameRight', value: content }));
+      setAnimationNames('fig-right', sentence);
+    }
+    setFigureData();
   }
 
   return {
-    performName: `enter-${key}`,
+    performName: `changeFigure-${sentence.content}`,
     duration,
     isHoldOn: false,
     stopFunction: () => {
-      WebGAL.gameplay.pixiStage?.stopPresetAnimationOnTarget(key);
+      WebGAL.gameplay.pixiStage?.stopPresetAnimationOnTarget(id);
     },
     blockingNext: () => false,
     blockingAuto: () => true,
@@ -272,15 +286,20 @@ export function changeFigure(sentence: ISentence): IPerform {
   };
 }
 
-function getOverrideBoundsArr(raw: string): undefined | [number, number, number, number] {
-  const parseOverrideBoundsResult = raw.split(',').map((e) => Number(e));
-  let isPass = true;
-  parseOverrideBoundsResult.forEach((e) => {
-    if (isNaN(e)) {
-      isPass = false;
+function getOverrideBoundsArr(boundsFromArgs: string | undefined | null): [number, number, number, number] | undefined {
+  if (!boundsFromArgs) return undefined;
+  // Try JSON array first
+  try {
+    const arr = JSON.parse(boundsFromArgs) as [number, number, number, number];
+    if (Array.isArray(arr) && arr.length === 4 && arr.every((v) => typeof v === 'number')) {
+      return arr;
     }
-  });
-  isPass = isPass && parseOverrideBoundsResult.length === 4;
-  if (isPass) return parseOverrideBoundsResult as [number, number, number, number];
-  else return undefined;
+  } catch (e) {
+    // fallback to comma-separated format
+  }
+  const parts = boundsFromArgs.split(',').map((e) => Number(e.trim()));
+  if (parts.length === 4 && parts.every((v) => !isNaN(v))) {
+    return parts as [number, number, number, number];
+  }
+  return undefined;
 }

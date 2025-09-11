@@ -7,6 +7,7 @@ import { generateUniversalSoftOffAnimationObj } from '@/Core/controller/stage/pi
 
 import { getEnterExitAnimation } from '@/Core/Modules/animationFunctions';
 import { WebGAL } from '@/Core/WebGAL';
+import { lutLoadManager } from '@/Core/util/lut/lutLoadManager';
 
 export function useSetFigure(stageState: IStageState) {
   const {
@@ -58,7 +59,7 @@ export function useSetFigure(stageState: IStageState) {
   }, [live2dFocus]);
 
   /**
-   * 同步元数据
+   * 同步元数据（zIndex）
    */
   useEffect(() => {
     Object.entries(figureMetaData).forEach(([key, value]) => {
@@ -67,6 +68,52 @@ export function useSetFigure(stageState: IStageState) {
         figureObject.pixiContainer.zIndex = value.zIndex;
       }
     });
+  }, [figureMetaData]);
+
+  // 应用/清除立绘 LUT
+  useEffect(() => {
+    Object.entries(figureMetaData).forEach(async ([key, value]) => {
+      const lut = value?.lut;
+      if (lut === undefined) return;
+
+      const applyLut = async () => {
+        const figureObject = WebGAL.gameplay.pixiStage?.getStageObjByKey(key);
+        if (!figureObject || figureObject.isExiting) return;
+
+        if (lut === '') {
+          lutLoadManager.cancelRequest(key);
+          figureObject.pixiContainer.setColorMapTexture(null);
+          return;
+        }
+        try {
+          const app = WebGAL.gameplay.pixiStage!.currentApp!;
+          const texture = await lutLoadManager.loadLUT(key, lut, app);
+          figureObject.pixiContainer.setColorMapTexture(texture);
+          figureObject.pixiContainer.colorMapIntensity = 1;
+        } catch (e: unknown) {
+          if (e instanceof Error && !e.message.includes('请求已被取消')) {
+            console.error('Failed to apply figure LUT', key, e);
+          }
+        }
+      };
+
+      // 立绘未就绪时，延迟一帧重试一次
+      if (!WebGAL.gameplay.pixiStage?.getStageObjByKey(key)) {
+        setTimeout(applyLut, 0);
+      } else {
+        applyLut();
+      }
+    });
+  }, [figureMetaData]);
+
+  // 组件卸载时清理所有立绘的 LUT 请求
+  useEffect(() => {
+    return () => {
+      // 清理所有立绘的 LUT 请求
+      Object.keys(figureMetaData).forEach((key) => {
+        lutLoadManager.cancelRequest(key);
+      });
+    };
   }, [figureMetaData]);
 
   /**
@@ -238,7 +285,7 @@ function removeFig(figObj: IStageObject, enterTikerKey: string, effects: IEffect
   WebGAL.gameplay.pixiStage?.removeStageObjectByKey(oldFigKey);
   const leaveKey = figKey + '-softoff';
   const { duration, animation } = getEnterExitAnimation(figLeaveAniKey, 'exit', false, figKey);
-  WebGAL.gameplay.pixiStage!.registerPresetAnimation(animation, leaveKey, figKey, effects);
+  WebGAL.gameplay.pixiStage!.registerAnimation(animation, leaveKey, figKey);
   setTimeout(() => {
     WebGAL.gameplay.pixiStage?.removeAnimation(leaveKey);
     WebGAL.gameplay.pixiStage?.removeStageObjectByKey(figKey);
@@ -276,7 +323,7 @@ function addLive2dFigure(...args: any[]) {
   // @ts-ignore
   return WebGAL.gameplay.pixiStage?.addLive2dFigure(...args);
 }
-// 聚合模型
+// 拼好模
 function addJsonlFigure(...args: any[]) {
   // @ts-ignore
   return WebGAL.gameplay.pixiStage?.addJsonlFigure(...args);

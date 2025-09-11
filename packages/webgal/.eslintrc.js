@@ -18,7 +18,7 @@ module.exports = {
     // 自定义你的规则
     // 最大圈复杂度
     complexity: ['error', 30],
-    'linebreak-style': ['error', 'unix'],
+    'linebreak-style': 'off',
     semi: 2,
     // indent: ['error', 2],
     'semi-style': ['error', 'last'],

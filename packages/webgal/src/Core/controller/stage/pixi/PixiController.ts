@@ -1,17 +1,28 @@
+import * as PIXI from 'pixi.js';
+import { v4 as uuid } from 'uuid';
 import { webgalStore } from '@/store/store';
-import { IEffect, IFigureAssociatedAnimation, IFigureMetadata, ITransform } from '@/store/stageInterface';
 import { setStage, stageActions } from '@/store/stageReducer';
-import { Live2D, WebGAL } from '@/Core/WebGAL';
-import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam } from '@/Core/live2DCore';
+import cloneDeep from 'lodash/cloneDeep';
+import {
+  IEffect,
+  IFigureAssociatedAnimation,
+  IFigureMetadata,
+  IFreeFigure,
+  ITransform,
+  baseTransform,
+} from '@/store/stageInterface';
+import { logger } from '@/Core/util/logger';
 import { isIOS } from '@/Core/initializeScript';
 import { WebGALPixiContainer } from '@/Core/controller/stage/pixi/WebGALPixiContainer';
-import { addSpineBgImpl, addSpineFigureImpl } from '@/Core/controller/stage/pixi/spine';
+import { Live2D, WebGAL } from '@/Core/WebGAL';
 import { SCREEN_CONSTANTS } from '@/Core/util/constants';
-import { logger } from '@/Core/util/logger';
-import { v4 as uuid } from 'uuid';
-import { cloneDeep, isEqual } from 'lodash';
-import * as PIXI from 'pixi.js';
+import { addSpineBgImpl, addSpineFigureImpl } from '@/Core/controller/stage/pixi/spine';
 import { AnimatedGIF } from '@pixi/gif';
+// import { setFreeFigure } from '@/store/stageReducer';
+import { baseBlinkParam, baseFocusParam, BlinkParam, FocusParam } from '@/Core/live2DCore';
+import { isEqual } from 'lodash';
+// import { figureCash } from '@/Core/gameScripts/vocal/conentsCash'; // 如果要使用 Live2D，取消这里的注释
+// import { Live2DModel, SoundManager } from 'pixi-live2d-display-webgal'; // 如果要使用 Live2D，取消这里的注释
 
 export interface IAnimationObject {
   setStartState: Function;
@@ -113,6 +124,11 @@ export default class PixiStage {
   private MAX_TEX_COUNT = 10;
 
   private figureCash: any;
+  private live2DModel: any;
+  private soundManager: any;
+
+  private loadedJsonlCache: Set<string> = new Set();
+
   public constructor() {
     const app = new PIXI.Application({
       backgroundAlpha: 0,
@@ -625,6 +641,9 @@ export default class PixiStage {
       thisFigureContainer.zIndex = metadata.zIndex;
     }
 
+    // 获取 loopMode（默认 true）
+    const loopMode: 'true' | 'false' | 'disappear' = metadata?.loop ?? 'true';
+
     // 添加容器到舞台
     this.figureContainer.addChild(thisFigureContainer);
 
@@ -640,10 +659,10 @@ export default class PixiStage {
     });
 
     try {
-      // ✅ 使用 fetch 异步加载 buffer
+      // 异步加载 buffer
       const buffer = await fetch(url).then((res) => res.arrayBuffer());
 
-      // ✅ 使用 AnimatedGIF.fromBuffer 异步解码
+      // 解码 GIF
       const gif = await AnimatedGIF.fromBuffer(buffer);
 
       const originalWidth = gif.width;
@@ -652,7 +671,7 @@ export default class PixiStage {
       const scaleY = this.stageHeight / originalHeight;
       const targetScale = Math.min(scaleX, scaleY);
 
-      // 设置缩放、锚点、初始位置
+      // 设置缩放、锚点、位置
       gif.scale.set(targetScale);
       gif.anchor.set(0.5);
       gif.position.y = this.stageHeight / 2;
@@ -660,13 +679,11 @@ export default class PixiStage {
       const targetWidth = originalWidth * targetScale;
       const targetHeight = originalHeight * targetScale;
 
-      // Y 位置微调（让立绘整体居中）
       thisFigureContainer.setBaseY(this.stageHeight / 2);
       if (targetHeight < this.stageHeight) {
         thisFigureContainer.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
       }
 
-      // 设置 X 方向位置
       if (presetPosition === 'center') {
         thisFigureContainer.setBaseX(this.stageWidth / 2);
       } else if (presetPosition === 'left') {
@@ -677,31 +694,54 @@ export default class PixiStage {
 
       thisFigureContainer.pivot.set(0, this.stageHeight / 2);
 
-      // ✅ 播放动画 + 添加到容器
+      // === 🔑 loop 控制 ===
+      if (loopMode === 'true') {
+        gif.loop = true;
+      } else {
+        gif.loop = false;
+        gif.onComplete = () => {
+          if (loopMode === 'false') {
+            // 停在最后一帧
+            gif.stop();
+          } else if (loopMode === 'disappear') {
+            // 播完消失
+            this.removeStageObjectByKey(key);
+          }
+        };
+      }
+
       gif.play();
       thisFigureContainer.addChild(gif);
     } catch (e) {
       console.error('GIF 加载失败', e);
     }
   }
-  // 聚合模型
+
+  // 实现添加拼好模
   /* eslint-disable complexity */
   public async addJsonlFigure(key: string, jsonlPath: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
-    console.log('正在使用聚合模型');
-    if (Live2D.isAvailable !== true) return;
+    console.log('正在使用聚合模型(JSONL)');
 
-    const container = new WebGALPixiContainer();
-    const figureUuid = uuid();
+    // ✅ 与 addLive2dFigure 保持一致的可用性守卫
+    if (!Live2D.isAvailable) {
+      console.warn('Live2D 不可用，addJsonlFigure 终止。');
+      return;
+    }
 
-    const index = this.figureObjects.findIndex((e) => e.key === key);
-    if (index >= 0) {
+    // 先移除同 key 立绘
+    const existIdx = this.figureObjects.findIndex((e) => e.key === key);
+    if (existIdx >= 0) {
       this.removeStageObjectByKey(key);
     }
 
+    // 新建容器并设置 zIndex
+    const container = new WebGALPixiContainer();
     const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex) container.zIndex = metadata.zIndex;
+    if (metadata?.zIndex !== undefined) container.zIndex = metadata.zIndex;
 
+    // 挂载并登记
     this.figureContainer.addChild(container);
+    const figureUuid = uuid();
     this.figureObjects.push({
       uuid: figureUuid,
       key,
@@ -711,137 +751,176 @@ export default class PixiStage {
       sourceType: 'live2d',
     });
 
+    // 读取 JSONL
+    let jsonlText = '';
     try {
-      const response = await fetch(jsonlPath);
-      const jsonlText = await response.text();
-      const lines = jsonlText.split('\n').filter(Boolean);
+      const resp = await fetch(jsonlPath);
+      jsonlText = await resp.text();
+    } catch (e) {
+      console.error('读取 JSONL 失败：', jsonlPath, e);
+      return;
+    }
 
-      // const paths: string[] = [];
-      const modelConfigs: {
-        path: string;
-        id?: string;
-        x?: number;
-        y?: number;
-        xscale?: number;
-        yscale?: number;
-      }[] = [];
-      let paramImport: number | null = null; // 用于存储 import 参数
-      const jsonlBaseDir = jsonlPath.substring(0, jsonlPath.lastIndexOf('/') + 1);
+    const lines = jsonlText.split('\n').filter(Boolean);
 
-      for (const line of lines) {
-        try {
-          const obj = JSON.parse(line);
-          // 解析 import 参数
-          // ✅ 判断是否是最后一行的汇总参数（有 motions 或 expressions）
-          if (obj?.motions || obj?.expressions) {
-            if (obj?.import !== undefined) {
-              paramImport = Number(obj.import);
-              console.info('检测到汇总 import 参数:', paramImport);
-            }
-            continue; // ✨不要当作模型行处理！
+    // 收集每行模型配置
+    interface ModelConfig {
+      path: string;
+      id?: string;
+      x?: number;
+      y?: number;
+      xscale?: number;
+      yscale?: number;
+      bounds?: [number, number, number, number]; // 可选：覆盖 bounds
+    }
+    const modelConfigs: ModelConfig[] = [];
+
+    // 末行汇总 import（PARAM_IMPORT）
+    let paramImport: number | null = null;
+
+    // 解析路径前缀
+    const jsonlBaseDir = jsonlPath.substring(0, jsonlPath.lastIndexOf('/') + 1);
+    const resolvePath = (p: string) => {
+      const normalized = String(p).replace(/^\.\//, '');
+      // http(s) 或以 game/ 开头认为是工程根相对路径，不拼接
+      if (/^(https?:)?\/\//i.test(normalized) || normalized.startsWith('game/')) {
+        return normalized;
+      }
+      return jsonlBaseDir + normalized;
+    };
+
+    // 解析每行
+    for (const line of lines) {
+      try {
+        const obj = JSON.parse(line);
+
+        // ✅ 末行汇总（motions/expressions/import）不要当模型行处理
+        if (obj?.motions || obj?.expressions) {
+          if (obj?.import !== undefined) {
+            paramImport = Number(obj.import);
+            console.info('检测到汇总 import =', paramImport);
           }
-          if (obj?.path) {
-            let fullPath = obj.path;
-            if (!obj.path.startsWith('game/')) {
-              fullPath = jsonlBaseDir + obj.path.replace(/^\.\//, '');
-            }
-
-            modelConfigs.push({
-              path: fullPath,
-              id: obj.id,
-              x: obj.x,
-              y: obj.y,
-              xscale: obj.xscale,
-              yscale: obj.yscale,
-            });
-          }
-        } catch (e) {
-          console.warn('JSONL parse error in line:', line);
+          continue;
         }
-      }
 
-      if (modelConfigs.length === 0) {
-        console.warn('No valid paths in jsonl:', jsonlPath);
-        return;
-      }
+        if (obj?.path) {
+          const fullPath = resolvePath(obj.path);
+          const cfg: ModelConfig = {
+            path: fullPath,
+            id: obj.id,
+            x: obj.x,
+            y: obj.y,
+            xscale: obj.xscale,
+            yscale: obj.yscale,
+          };
 
-      const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
-      const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
-      const motionToSet = motionFromState?.motion ?? '';
-      const expressionToSet = expressionFromState?.expression ?? '';
-
-      const models: any[] = [];
-
-      for (const modelConfig of modelConfigs) {
-        const { path: modelPath, x, y, xscale, yscale } = modelConfig;
-        try {
-          const model = await Live2D.Live2DModel.from(modelPath, { autoInteract: false });
-          if (!model) continue;
-          // 暂时隐藏模型，等全部模型加载后再统一显示
-          model.visible = false;
-
-          const stageWidth = this.stageWidth;
-          const stageHeight = this.stageHeight;
-
-          const scaleX = stageWidth / model.width;
-          const scaleY = stageHeight / model.height;
-          const targetScale = Math.min(scaleX, scaleY);
-
-          const targetWidth = model.width * targetScale;
-          const targetHeight = model.height * targetScale;
-
-          const finalScaleX = targetScale * (xscale ?? 1);
-          const finalScaleY = targetScale * (yscale ?? 1);
-          model.scale.set(finalScaleX, finalScaleY);
-
-          model.anchor.set(0.5);
-          model.position.set(x ?? 0, stageHeight / 2 + (y ?? 0));
-
-          container.setBaseY(stageHeight / 2);
-          if (targetHeight < stageHeight) {
-            container.setBaseY(stageHeight / 2 + (stageHeight - targetHeight) / 2);
+          // 可选 bounds（如果 JSONL 行里有）
+          if (Array.isArray(obj.bounds) && obj.bounds.length === 4) {
+            cfg.bounds = [Number(obj.bounds[0]), Number(obj.bounds[1]), Number(obj.bounds[2]), Number(obj.bounds[3])];
           }
 
-          if (presetPosition === 'center') {
-            container.setBaseX(stageWidth / 2);
-          } else if (presetPosition === 'left') {
-            container.setBaseX(targetWidth / 2);
-          } else if (presetPosition === 'right') {
-            container.setBaseX(stageWidth - targetWidth / 2);
-          }
-
-          container.pivot.set(0, stageHeight / 2);
-          container.addChild(model);
-          models.push(model);
-
-          // ✅ 禁用自动旋转（防止抖动或头部异常移动）
-          // 感谢Hardy-Lee桑
-          if (model.internalModel.angleXParamIndex !== undefined) model.internalModel.angleXParamIndex = 999;
-          if (model.internalModel.angleYParamIndex !== undefined) model.internalModel.angleYParamIndex = 999;
-          if (model.internalModel.angleZParamIndex !== undefined) model.internalModel.angleZParamIndex = 999;
-
-          // @ts-ignore 禁用自动眨眼
-          if (model.internalModel?.eyeBlink) {
-            model.internalModel.eyeBlink.blinkInterval = 1000 * 60 * 60 * 24;
-            model.internalModel.eyeBlink.nextBlinkTimeLeft = 1000 * 60 * 60 * 24;
-          }
-
-          // 每个模型加载完立刻设置 PARAM_IMPORT
-          if (paramImport !== null) {
-            try {
-              model.internalModel?.coreModel?.setParamFloat?.('PARAM_IMPORT', paramImport);
-              console.info(`✅ 设置 PARAM_IMPORT = ${paramImport} 给模型: ${modelPath}`);
-            } catch (e) {
-              console.warn(`❌ 设置 PARAM_IMPORT 失败 (${modelPath})`, e);
-            }
-          }
-        } catch (err) {
-          console.warn(`加载模型 ${modelPath} 失败:`, err);
+          modelConfigs.push(cfg);
         }
+      } catch (e) {
+        console.warn('JSONL 某行解析失败，已跳过：', line);
       }
+    }
 
-      // 应用从状态中读取的 motion 和 expression
-      for (const model of models) {
+    if (modelConfigs.length === 0) {
+      console.warn('JSONL 无有效模型行：', jsonlPath);
+      return;
+    }
+
+    // 读取当前 state 里的 motion / expression（与 addLive2dFigure 一致）
+    const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+    const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
+    const motionToSet = motionFromState?.motion ?? '';
+    const expressionToSet = expressionFromState?.expression ?? '';
+
+    const models: any[] = [];
+    const stageWidth = this.stageWidth;
+    const stageHeight = this.stageHeight;
+
+    // 逐个加载并放入容器
+    for (const cfg of modelConfigs) {
+      const { path: modelPath, x, y, xscale, yscale, bounds } = cfg;
+
+      try {
+        const model = await Live2D.Live2DModel.from(modelPath, {
+          autoInteract: false,
+          // 如果提供了 bounds，就覆盖（与 addLive2dFigure 的用法一致）
+          overWriteBounds: bounds ? { x0: bounds[0], y0: bounds[1], x1: bounds[2], y1: bounds[3] } : undefined,
+        });
+
+        if (!model) continue;
+
+        // 先隐藏，等统一设置完再显示
+        model.visible = false;
+
+        // 计算缩放（与图片/视频一致，尽量填满高度同时不超宽）
+        const scaleX = stageWidth / model.width;
+        const scaleY = stageHeight / model.height;
+        const targetScale = Math.min(scaleX, scaleY);
+
+        const targetWidth = model.width * targetScale;
+        const targetHeight = model.height * targetScale;
+
+        const finalScaleX = targetScale * (xscale ?? 1);
+        const finalScaleY = targetScale * (yscale ?? 1);
+
+        model.scale.set(finalScaleX, finalScaleY);
+        model.anchor.set(0.5);
+        model.position.set(x ?? 0, stageHeight / 2 + (y ?? 0));
+
+        // 容器基准位（上下居中，必要时向下补齐）
+        container.setBaseY(stageHeight / 2);
+        if (targetHeight < stageHeight) {
+          container.setBaseY(stageHeight / 2 + (stageHeight - targetHeight) / 2);
+        }
+
+        // 左中右预设位
+        if (presetPosition === 'center') {
+          container.setBaseX(stageWidth / 2);
+        } else if (presetPosition === 'left') {
+          container.setBaseX(targetWidth / 2);
+        } else if (presetPosition === 'right') {
+          container.setBaseX(stageWidth - targetWidth / 2);
+        }
+
+        container.pivot.set(0, stageHeight / 2);
+        container.addChild(model);
+        models.push(model);
+
+        // ✨ 细节：禁用角度自动控制，避免抖头
+        if (model.internalModel?.angleXParamIndex !== undefined) model.internalModel.angleXParamIndex = 999;
+        if (model.internalModel?.angleYParamIndex !== undefined) model.internalModel.angleYParamIndex = 999;
+        if (model.internalModel?.angleZParamIndex !== undefined) model.internalModel.angleZParamIndex = 999;
+
+        // ✨ 细节：关闭自动眨眼（保留你项目里的统一眨眼控制权）
+        if (model.internalModel?.eyeBlink) {
+          // @ts-ignore
+          model.internalModel.eyeBlink.blinkInterval = 1000 * 60 * 60 * 24;
+          // @ts-ignore
+          model.internalModel.eyeBlink.nextBlinkTimeLeft = 1000 * 60 * 60 * 24;
+        }
+
+        // ✨ 设置 PARAM_IMPORT（若 JSONL 末行提供）
+        if (paramImport !== null) {
+          try {
+            model.internalModel?.coreModel?.setParamFloat?.('PARAM_IMPORT', paramImport);
+            console.info(`设置 PARAM_IMPORT=${paramImport} ->`, modelPath);
+          } catch (e) {
+            console.warn(`设置 PARAM_IMPORT 失败(${modelPath})`, e);
+          }
+        }
+      } catch (err) {
+        console.warn(`加载模型失败：${modelPath}`, err);
+      }
+    }
+
+    // 统一应用 motion/expression，并显示
+    for (const model of models) {
+      try {
         if (motionToSet) {
           // @ts-ignore
           model.motion(motionToSet, 0, 3);
@@ -850,100 +929,17 @@ export default class PixiStage {
           // @ts-ignore
           model.expression(expressionToSet);
         }
-        // 统一显示模型
         model.visible = true;
+      } catch (e) {
+        console.warn('设置 motion/expression 失败', e);
       }
-
-      if (motionToSet) this.updateL2dMotionByKey(key, motionToSet);
-      if (expressionToSet) this.updateL2dExpressionByKey(key, expressionToSet);
-    } catch (e) {
-      console.error('addJsonlFigure 加载失败:', e);
     }
+
+    // 记录到状态（与 addLive2dFigure 行为一致）
+    if (motionToSet) this.updateL2dMotionByKey(key, motionToSet);
+    if (expressionToSet) this.updateL2dExpressionByKey(key, expressionToSet);
   }
-  /* eslint-disable complexity */
-  // 添加视频模型
-  public addVideoFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
-    const thisFigureContainer = new WebGALPixiContainer();
-
-    // 移除已有相同 key 的立绘
-    const existingIndex = this.figureObjects.findIndex((e) => e.key === key);
-    if (existingIndex >= 0) {
-      this.removeStageObjectByKey(key);
-    }
-
-    // 设置 zIndex（如果 metadata 有）
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex !== undefined) {
-      thisFigureContainer.zIndex = metadata.zIndex;
-    }
-
-    // 添加容器到舞台
-    this.figureContainer.addChild(thisFigureContainer);
-
-    // 注册到立绘对象列表
-    const figureUuid = uuid();
-    this.figureObjects.push({
-      uuid: figureUuid,
-      key,
-      pixiContainer: thisFigureContainer,
-      sourceUrl: url,
-      sourceType: 'video',
-      sourceExt: this.getExtName(url),
-    });
-
-    // 延迟一帧加载避免卡顿
-    setTimeout(() => {
-      const video = document.createElement('video');
-      video.src = url;
-      video.crossOrigin = 'anonymous';
-      video.muted = true;
-      video.loop = true;
-      video.autoplay = true;
-      video.playsInline = true;
-      video.preload = 'auto';
-
-      // 创建 PIXI texture
-      const texture = PIXI.Texture.from(video);
-      const sprite = new PIXI.Sprite(texture);
-
-      // 加载后获取原始宽高
-      video.onloadedmetadata = () => {
-        const originalWidth = video.videoWidth;
-        const originalHeight = video.videoHeight;
-        const scaleX = this.stageWidth / originalWidth;
-        const scaleY = this.stageHeight / originalHeight;
-        const targetScale = Math.min(scaleX, scaleY);
-
-        sprite.scale.set(targetScale);
-        sprite.anchor.set(0.5);
-        sprite.position.y = this.stageHeight / 2;
-
-        const targetWidth = originalWidth * targetScale;
-        const targetHeight = originalHeight * targetScale;
-
-        thisFigureContainer.setBaseY(this.stageHeight / 2);
-        if (targetHeight < this.stageHeight) {
-          thisFigureContainer.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
-        }
-
-        if (presetPosition === 'center') {
-          thisFigureContainer.setBaseX(this.stageWidth / 2);
-        } else if (presetPosition === 'left') {
-          thisFigureContainer.setBaseX(targetWidth / 2);
-        } else if (presetPosition === 'right') {
-          thisFigureContainer.setBaseX(this.stageWidth - targetWidth / 2);
-        }
-
-        thisFigureContainer.pivot.set(0, this.stageHeight / 2);
-        thisFigureContainer.addChild(sprite);
-      };
-
-      // 错误处理
-      video.onerror = (e) => {
-        console.error('视频加载失败喵！', e);
-      };
-    }, 0);
-  }
+  /* eslint-enable complexity */ /* eslint-disable complexity */
 
   /**
    * Live2d立绘，如果要使用 Live2D，取消这里的注释
@@ -951,7 +947,7 @@ export default class PixiStage {
    */
   // eslint-disable-next-line max-params
   public addLive2dFigure(key: string, jsonPath: string, pos: string) {
-    if (Live2D.isAvailable !== true) return;
+    if (!Live2D.isAvailable) return;
     try {
       let stageWidth = this.stageWidth;
       let stageHeight = this.stageHeight;
@@ -1015,16 +1011,16 @@ export default class PixiStage {
             models.forEach((model) => {
               const scaleX = stageWidth / model.width;
               const scaleY = stageHeight / model.height;
-              const targetScale = Math.min(scaleX, scaleY) * 1.25;
-              // const targetWidth = model.width * targetScale;
+              const targetScale = Math.min(scaleX, scaleY);
+              const targetWidth = model.width * targetScale;
               const targetHeight = model.height * targetScale;
               model.scale.x = targetScale;
               model.scale.y = targetScale;
               model.anchor.set(0.5);
               model.pivot.x += (overrideBounds[0] + overrideBounds[2]) * 0.5;
               model.pivot.y += (overrideBounds[1] + overrideBounds[3]) * 0.5;
-              // model.position.x = 0;
-              model.position.y = stageHeight / 1.8;
+              model.position.x = 0;
+              model.position.y = stageHeight / 2;
 
               let baseY = stageHeight / 2;
               if (targetHeight < stageHeight) {
@@ -1034,9 +1030,9 @@ export default class PixiStage {
               if (pos === 'center') {
                 thisFigureContainer.setBaseX(stageWidth / 2);
               } else if (pos === 'left') {
-                thisFigureContainer.setBaseX(850);
+                thisFigureContainer.setBaseX(targetWidth / 2);
               } else if (pos === 'right') {
-                thisFigureContainer.setBaseX(1710);
+                thisFigureContainer.setBaseX(stageWidth - targetWidth / 2);
               }
 
               thisFigureContainer.pivot.set(0, stageHeight / 2);
@@ -1104,6 +1100,120 @@ export default class PixiStage {
       console.error('Live2d Module err: ' + error);
       Live2D.isAvailable = false;
     }
+  }
+
+  public addVideoFigure(key: string, url: string, presetPosition: 'left' | 'center' | 'right' = 'center') {
+    const thisFigureContainer = new WebGALPixiContainer();
+
+    // 移除已有相同 key 的立绘
+    const existingIndex = this.figureObjects.findIndex((e) => e.key === key);
+    if (existingIndex >= 0) {
+      this.removeStageObjectByKey(key);
+    }
+
+    // 设置 zIndex（如果 metadata 有）
+    const metadata = this.getFigureMetadataByKey(key);
+    if (metadata?.zIndex !== undefined) {
+      thisFigureContainer.zIndex = metadata.zIndex;
+    }
+
+    // 获取 loop 模式（默认 true）
+    const loopMode: 'true' | 'false' | 'disappear' = metadata?.loop ?? 'true';
+
+    // 添加容器到舞台
+    this.figureContainer.addChild(thisFigureContainer);
+
+    // 注册到立绘对象列表
+    const figureUuid = uuid();
+    this.figureObjects.push({
+      uuid: figureUuid,
+      key,
+      pixiContainer: thisFigureContainer,
+      sourceUrl: url,
+      sourceType: 'video',
+      sourceExt: this.getExtName(url),
+    });
+
+    // 延迟一帧加载避免卡顿
+    setTimeout(() => {
+      const video = document.createElement('video');
+      video.src = url;
+      video.crossOrigin = 'anonymous';
+      video.muted = true;
+      video.autoplay = true;
+      video.playsInline = true;
+      video.preload = 'auto';
+
+      // 根据 loopMode 设置循环逻辑
+      if (loopMode === 'true') {
+        video.loop = true;
+      } else {
+        video.loop = false;
+        video.addEventListener('ended', () => {
+          if (loopMode === 'false') {
+            // 播完停在最后一帧
+            video.pause();
+            video.currentTime = video.duration;
+          } else if (loopMode === 'disappear') {
+            this.removeStageObjectByKey(key);
+
+            // 清 Redux
+            const dispatch = webgalStore.dispatch;
+            if (key === 'fig-center') {
+              dispatch(setStage({ key: 'figName', value: '' }));
+            } else if (key === 'fig-left') {
+              dispatch(setStage({ key: 'figNameLeft', value: '' }));
+            } else if (key === 'fig-right') {
+              dispatch(setStage({ key: 'figNameRight', value: '' }));
+            } else {
+              // 自由立绘
+              dispatch(stageActions.setFreeFigureByKey({ key, name: '', basePosition: 'center' }));
+            }
+          }
+        });
+      }
+
+      // 创建 PIXI texture
+      const texture = PIXI.Texture.from(video);
+      const sprite = new PIXI.Sprite(texture);
+
+      // 加载后获取原始宽高
+      video.onloadedmetadata = () => {
+        const originalWidth = video.videoWidth;
+        const originalHeight = video.videoHeight;
+        const scaleX = this.stageWidth / originalWidth;
+        const scaleY = this.stageHeight / originalHeight;
+        const targetScale = Math.min(scaleX, scaleY);
+
+        sprite.scale.set(targetScale);
+        sprite.anchor.set(0.5);
+        sprite.position.y = this.stageHeight / 2;
+
+        const targetWidth = originalWidth * targetScale;
+        const targetHeight = originalHeight * targetScale;
+
+        thisFigureContainer.setBaseY(this.stageHeight / 2);
+        if (targetHeight < this.stageHeight) {
+          thisFigureContainer.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
+        }
+
+        if (presetPosition === 'center') {
+          thisFigureContainer.setBaseX(this.stageWidth / 2);
+        } else if (presetPosition === 'left') {
+          thisFigureContainer.setBaseX(targetWidth / 2);
+        } else if (presetPosition === 'right') {
+          thisFigureContainer.setBaseX(this.stageWidth - targetWidth / 2);
+        }
+
+        thisFigureContainer.pivot.set(0, this.stageHeight / 2);
+        thisFigureContainer.addChild(sprite);
+      };
+
+      // 错误处理
+      video.onerror = (e) => {
+        console.error('视频加载失败喵！', e);
+      };
+    }, 0);
   }
 
   public changeModelMotionByKey(key: string, motion: string) {
