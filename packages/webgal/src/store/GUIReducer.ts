@@ -16,7 +16,7 @@ const initState: IGuiState = {
   showTitle: true,
   showMenuPanel: false,
   showTextBox: true,
-  showControls: false,
+  showControls: true,
   controlsVisibility: true,
   currentMenuTag: MenuPanelTag.Option,
   titleBg: '',

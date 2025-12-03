@@ -1,0 +1,141 @@
+.main {
+  position: absolute;
+  top: 40px;
+  right: 80px;
+
+  transition: width 0.25s;
+  height: 140px;
+
+  z-index: 9;
+
+  border-style: solid;
+  border-color: white;
+  border-width: 5px;
+  border-radius: 25px;
+
+  background-color: transparent;
+
+  & > .background {
+    border-radius: 20px;
+
+    margin: 5px;
+    transition: width 0.25s;
+    height: 120px;
+
+    background-color: #ccc;
+    overflow: hidden;
+
+    & > .foldButton {
+      background-color: transparent;
+      cursor: pointer;
+
+      position: relative;
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+
+      & > .icon {
+        position: relative;
+        left: -32px;
+        top: 12px;
+        color: #444;
+        font-size: 80px;
+      }
+
+      & > .text {
+        position: relative;
+        color: #444;
+        font-size: 40px;
+      }
+    }
+
+    & > .buttons {
+      height: 120px;
+
+      color: #333;
+      font-size: 10px;
+
+      flex-direction: row;
+      justify-content: center;
+      align-items: center;
+      gap: 15px;
+
+      & > .unFoldButton {
+        background-color: transparent;
+        cursor: pointer;
+        display: flex;
+        position: relative;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+
+        & > .icon {
+          position: relative;
+          left: 16px;
+          top: 12px;
+          width: 120px;
+          height: 120px;
+          color: #444;
+          font-size: 80px;
+        }
+
+        & > .text {
+          position: relative;
+          left: 16px;
+          top: 32px;
+          width: 120px;
+          height: 120px;
+          color: #444;
+          font-size: 40px;
+        }
+      }
+    }
+  }
+}
+
+.fastSlPreview {
+  position: absolute;
+  top: -100px;
+  right: 0;
+  background: linear-gradient(315deg, rgba(253, 251, 251, 0.9) 0%, rgba(235, 237, 238, 0.85) 100%);
+  width: 900px;
+  height: 230px;
+  color: #005caf;
+  border-radius: 5px;
+  display: none;
+  animation: fastSlEnter 0.33s;
+  transition: opacity 0.33s;
+}
+
+.fastSave:hover .fastSPreview {
+  display: block;
+}
+
+.fastLoad:hover .fastLPreview {
+  display: block;
+}
+
+@keyframes fastSlEnter {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.version {
+  position: absolute;
+  display: flex;
+  z-index: 15;
+  font-size: 18px;
+
+  right: 24px;
+  top: 150px;
+
+  color: white;
+  opacity: 0.75;
+  flex-direction: column;
+  align-items: flex-end;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5), -2px -2px 4px rgba(255, 255, 255, 0.5);
+}

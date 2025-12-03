@@ -1,5 +1,6 @@
 import { CSSProperties } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { config } from '@/config/mygo';
 import { __INFO } from '@/config/info';
 import { RootState } from '@/store/store';
 import { fullScreenOption } from '@/store/userDataInterface';
@@ -170,8 +171,8 @@ export default function Title() {
       )}
       {GUIState.showTitle && (
         <div className={styles.Title_version_info}>
-          <div>WebGAL MyGO Engine V3.0.0</div>
-          <div>(Based on WebGAL v{__INFO.version})</div>
+          <div>WebGAL MyGO Engine V{config.version}</div>
+          <div>( Based on WebGAL v{__INFO.version} )</div>
         </div>
       )}
     </>

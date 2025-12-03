@@ -218,6 +218,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
             style={{
               fontFamily: font,
             }}
+            data-auto={WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast ? 'true' : 'false'}
           >
             <div id="miniAvatar" className={applyStyle('miniAvatarContainer', styles.miniAvatarContainer)}>
               {miniAvatar !== '' && (
