@@ -11,6 +11,8 @@ import { logger } from '@/Core/util/logger';
 import { v4 as uuid } from 'uuid';
 import { cloneDeep, isEqual } from 'lodash';
 import * as PIXI from 'pixi.js';
+import { INSTALLED } from 'pixi.js';
+import { GifResource } from './GifResource';
 import { AnimatedGIF } from '@pixi/gif';
 
 export interface IAnimationObject {
@@ -79,6 +81,8 @@ interface SetContainerInitialPositionOptions {
 
 // @ts-ignore
 window.PIXI = PIXI;
+
+INSTALLED.push(GifResource);
 
 export default class PixiStage {
   public static assignTransform<T extends ITransform>(target: T, source?: ITransform) {
@@ -1448,7 +1452,6 @@ export default class PixiStage {
   }
 
   public getFigureMetadataByKey(key: string): IFigureMetadata | undefined {
-    console.log(key, webgalStore.getState().stage.figureMetaData);
     return webgalStore.getState().stage.figureMetaData[key];
   }
 
