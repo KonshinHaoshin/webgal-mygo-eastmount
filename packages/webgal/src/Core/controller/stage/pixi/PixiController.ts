@@ -126,8 +126,6 @@ export default class PixiStage {
   private live2dFigureRecorder: Array<ILive2DRecord> = [];
   // 存储当前口型值，用于在motion更新后重新应用
   private currentMouthValues: Map<string, number> = new Map();
-  // 存储当前口型值，用于在motion更新后重新应用
-  private currentMouthValues: Map<string, number> = new Map();
   // 锁定变换对象（对象可能正在执行动画，不能应用变换）
   private lockTransformTarget: Array<string> = [];
 
