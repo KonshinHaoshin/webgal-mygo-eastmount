@@ -1,10 +1,13 @@
 import styles from './textbox.module.scss';
-import { ReactNode, useEffect } from 'react';
+import { useEffect } from 'react';
 import { WebGAL } from '@/Core/WebGAL';
 import { ITextboxProps } from './types';
 import useApplyStyle from '@/hooks/useApplyStyle';
 import { css } from '@emotion/css';
 import { textSize } from '@/store/userDataInterface';
+import { useSelector } from 'react-redux';
+import { RootState } from '@/store/store';
+import { useValue } from '@/hooks/useValue';
 
 export default function IMSSTextbox(props: ITextboxProps) {
   const {
@@ -185,8 +188,23 @@ export default function IMSSTextbox(props: ITextboxProps) {
     );
   });
 
-  const lineHeightCssStr = `line-height: ${textSizeState === textSize.medium ? '2.2em' : '2em'}`;
+  const userDataState = useSelector((state: RootState) => state.userData);
+  const lineHeightValue = textSizeState === textSize.medium ? 2.2 : 2;
+  const textLineHeight = userDataState.globalGameVar.LineHeight;
+  const finalTextLineHeight = textLineHeight ? Number(textLineHeight) : lineHeightValue;
+  const lineHeightCssStr = `line-height: ${finalTextLineHeight}em`;
   const lhCss = css(lineHeightCssStr);
+
+  const isWaiting = useValue(false);
+  useEffect(() => {
+    const updateIsWaiting = () => {
+      isWaiting.set(!(WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast) && WebGAL.gameplay.isWaiting);
+    };
+    const timer = setInterval(updateIsWaiting, 50);
+    return () => {
+      clearInterval(timer);
+    };
+  }, []);
 
   return (
     <>
@@ -205,6 +223,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
             style={{
               opacity: `${textboxOpacity / 100}`,
             }}
+            data-waiting={isWaiting.value ? 'true' : 'false'}
           />
           <div
             id="textBoxMain"
@@ -218,6 +237,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
             style={{
               fontFamily: font,
             }}
+            data-auto={WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast ? 'true' : 'false'}
           >
             <div id="miniAvatar" className={applyStyle('miniAvatarContainer', styles.miniAvatarContainer)}>
               {miniAvatar !== '' && (

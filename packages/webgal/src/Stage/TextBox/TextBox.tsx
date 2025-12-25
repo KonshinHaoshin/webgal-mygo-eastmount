@@ -7,8 +7,8 @@ import { getTextSize } from '@/UI/getTextSize';
 import { match } from '@/Core/util/match';
 import { textSize } from '@/store/userDataInterface';
 import IMSSTextbox from '@/Stage/TextBox/IMSSTextbox';
-import { SCREEN_CONSTANTS } from '@/Core/util/constants';
 import useEscape from '@/hooks/useEscape';
+import { WebGAL } from '@/Core/WebGAL';
 
 const userAgent = navigator.userAgent;
 const isFirefox = /firefox/i.test(userAgent);
@@ -33,11 +33,14 @@ export const TextBox = () => {
     size = getTextSize(stageState.showTextSize) + '%';
     textSizeState = stageState.showTextSize;
   }
-  const lineLimit = match(textSizeState)
-    .with(textSize.small, () => 3)
-    .with(textSize.medium, () => 2)
-    .with(textSize.large, () => 2)
-    .default(() => 2);
+  const MaxTextLine = Number(userDataState.globalGameVar.Max_line); // congfig定义字体行数
+  const lineLimit = Number.isNaN(MaxTextLine)
+    ? match(textSizeState)
+        .with(textSize.small, () => 3)
+        .with(textSize.medium, () => 2)
+        .with(textSize.large, () => 2)
+        .default(() => 2)
+    : MaxTextLine;
   // 拆字
   const textArray = compileSentence(stageState.showText, lineLimit);
   const isHasName = stageState.showName !== '';
@@ -58,8 +61,8 @@ export const TextBox = () => {
     }
 
     const handleResize = () => {
-      const targetHeight = SCREEN_CONSTANTS.height;
-      const targetWidth = SCREEN_CONSTANTS.width;
+      const targetHeight = WebGAL.stageHeight;
+      const targetWidth = WebGAL.stageWidth;
 
       const h = window.innerHeight; // 窗口高度
       const w = window.innerWidth; // 窗口宽度

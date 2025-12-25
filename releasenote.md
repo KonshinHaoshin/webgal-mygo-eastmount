@@ -8,25 +8,27 @@
 
 #### 新功能
 
-支持在 Intro 中使用背景图片，图片不存在则回退至背景色
+模板文件中的字体会自动加载，并可在选项中选择模板或内置字体
 
-新增 Live2D 立绘的眨眼（Blink）和焦点（Focus）参数设置
+文本框支持配置最大行数和行高，便于自定义排版
 
-新增立绘 Z-Index 变更时应用，用于控制图层顺序
+新增 Steam 集成，可通过 Steam_AppID 配置与 callSteam 指令解锁成就
 
-改进了动画的缓动（Easing）和持续时间处理
+舞台渲染支持 GIF 资源
+
+立绘和背景支持用 enterDuration / exitDuration 单独设置进退场动画时长
 
 #### 修复
 
-通过更新 Live2D 库修复了立绘的透明度（Alpha）问题
+修复鼠标滚轮触发快进后无法正常取消且按钮状态异常的问题
 
-修复了 Live2D 模型的初始化时机问题，避免加载错误
+改进效果音播放的错误处理，缺失或失败不会再阻塞播放或自动前进
 
-修复了 `say` 指令中 `center` 参数延迟生效的问题
+修复脚本解析对空白语句、注释和 Windows 换行的处理，避免错误裁剪
 
-修复了部分动画同步缺失的问题
+修复切换语音文件时可能不重新加载导致语音缺失的问题（#791）
 
-通过代码重构和优化构建流程，减小了最终产物体积，提升了稳定性
+修复立绘和背景自定义进退场时长的参数键名与 0 时长处理，确保配置生效
 
 <!-- English Translation -->
 ## Release Notes
@@ -39,25 +41,27 @@
 
 #### New Features
 
-Support for using background images in the Intro, with a fallback to the background color if the image doesn't exist
+Template fonts are now loaded from game/template/template.json, and the options menu lets you pick template or built-in fonts
 
-Added support for setting Blink and Focus parameters for Live2D models
+Textbox layout can be customized with max line count and line height settings
 
-Added support for applying z-index to figures to control layer order
+Added Steam integration: set Steam_AppID and use the callSteam script to unlock achievements
 
-Improved animation easing and duration handling
+Stage rendering now supports GIF assets
+
+Figures and backgrounds accept enterDuration / exitDuration to override enter/exit animation durations
 
 #### Fixes
 
-Fixed alpha (transparency) issues with Live2D models by updating the library
+Fixed fast-forward triggered by mouse wheel not stopping correctly or resetting the button state
 
-Fixed Live2D model initialization timing to prevent loading errors
+Improved error handling for effect audio so missing or failed sounds no longer block playback or auto-advance
 
-Fixed an issue where the `center` argument in the `say` command was delayed
+Fixed script parsing of blank lines, comments, and Windows line endings to avoid trimming mistakes
 
-Fixed issues with missing animation synchronization
+Fixed voice lines sometimes not reloading when switching audio files (#791)
 
-Reduced final bundle size and improved stability through code refactoring and build process optimization
+Fixed animation duration configuration keys and zero-duration handling so custom enter/exit timings take effect for figures and backgrounds
 
 <!-- Japanese Translation -->
 ## リリースノート
@@ -70,22 +74,24 @@ Reduced final bundle size and improved stability through code refactoring and bu
 
 #### 新機能
 
-イントロで背景画像を使用できるようになり、画像が存在しない場合は背景色にフォールバックします
+テンプレート（game/template/template.json）のフォントを読み込み、オプションでテンプレート／内蔵フォントを選べるようになりました
 
-Live2D立ち絵のまばたき（Blink）と焦点（Focus）パラメータの設定をサポートしました
+テキストボックスの最大行数と行間を設定でカスタマイズできるようになりました
 
-キャラクターのz-index適用をサポートし、レイヤー順序の制御を可能にしました
+Steam 連携を追加し、Steam_AppID を設定して callSteam スクリプトで実績を解除できます
 
-アニメーションのイージングと持続時間の処理を改善しました
+ステージ描画が GIF アセットに対応しました
+
+立ち絵と背景の登場／退場アニメに enterDuration / exitDuration で時間を上書きできるようになりました
 
 #### 修正
 
-Live2Dライブラリを更新し、立ち絵のアルファ（透明度）の問題を修正しました
+マウスホイールでの早送りが正しく解除されずボタン状態が戻らない問題を修正しました
 
-Live2Dモデルの初期化タイミングを修正し、読み込みエラーを防止しました
+存在しない効果音などで再生が失敗しても再生や自動進行が止まらないようエラーハンドリングを改善しました
 
-`say` コマンドの `center` 引数の適用が遅れる問題を修正しました
+空行や空のセリフ、Windows の改行を含むスクリプトのパース処理を修正しました
 
-一部のアニメーション同期が欠落する問題を修正しました
+ボイス切り替え時に音声が更新されない場合がある不具合を修正しました（#791）
 
-コードのリファクタリングとビルドプロセスの最適化により、最終的なバンドルサイズを削減し、安定性を向上させました
+立ち絵／背景の入退場アニメの時間設定でキー名や 0 ミリ秒を扱えない問題を修正しました
