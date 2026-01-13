@@ -9,6 +9,7 @@ import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useValue } from '@/hooks/useValue';
 
+import autoPNG from '@/assets/image/sg/auto.png';
 export default function IMSSTextbox(props: ITextboxProps) {
   const {
     textArray,
@@ -281,6 +282,13 @@ export default function IMSSTextbox(props: ITextboxProps) {
             >
               {textElementList}
             </div>
+
+            {/* 自动模式图标 */}
+            {(WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast) && (
+              <div className={styles.autoIndicator}>
+                <img src={autoPNG} alt="自动模式" className={styles.autoIcon} />
+              </div>
+            )}
           </div>
         </div>
       )}
