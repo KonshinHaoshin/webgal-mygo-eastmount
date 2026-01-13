@@ -1,0 +1,1 @@
+.SGUI{position:absolute;bottom:0;left:0;z-index:8;display:flex;flex-direction:row;gap:20px}.sguiButton{background:none;border:none;padding:0;cursor:pointer;transition:transform 0.2s ease}.buttonImage{width:159px;height:60px;display:block}

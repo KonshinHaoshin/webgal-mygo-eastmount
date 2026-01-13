@@ -206,11 +206,11 @@
 }
 
 .gearInlineIcon {
-  width: 1em;
-  height: 1em;
+  width: 64px;
+  height: 64px;
   animation: gearRotate 2s linear infinite;
-  filter: drop-shadow(0 0 2px rgba(255, 255, 255, 0.7));
   vertical-align: middle;
+  margin-top: 15px;
 }
 
 @keyframes gearRotate {
