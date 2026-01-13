@@ -47,6 +47,7 @@ export function useHotkey(opt?: HotKeyType) {
   useFastSaveBeforeUnloadPage();
   useSpaceAndEnter();
   useToggleFullScreen();
+  useToggleControls();
 }
 
 /**
@@ -399,4 +400,27 @@ function useToggleFullScreen() {
     dispatch(setOptionData({ key: 'fullScreen', value: isFullScreen ? 0 : 1 }));
     if (WebGAL.gameKey) setStorage();
   }, [isFullScreen]);
+}
+
+/**
+ * F1 切换控制面板显示/隐藏
+ */
+function useToggleControls() {
+  const GUIStore = useGenSyncRef((state: RootState) => state.GUI);
+  const setComponentVisibility = useSetComponentVisibility();
+  
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'F1') {
+        e.preventDefault();
+        const currentVisibility = GUIStore.current.controlsVisibility;
+        setComponentVisibility('controlsVisibility', !currentVisibility);
+      }
+    };
+    
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 }

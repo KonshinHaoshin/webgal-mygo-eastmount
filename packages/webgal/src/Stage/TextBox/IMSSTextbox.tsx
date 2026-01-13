@@ -1,5 +1,5 @@
 import styles from './textbox.module.scss';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { WebGAL } from '@/Core/WebGAL';
 import { ITextboxProps } from './types';
 import useApplyStyle from '@/hooks/useApplyStyle';
@@ -10,6 +10,8 @@ import { RootState } from '@/store/store';
 import { useValue } from '@/hooks/useValue';
 
 import autoPNG from '@/assets/image/sg/auto.png';
+import gear from '@/assets/image/sg/gear.png';
+
 export default function IMSSTextbox(props: ITextboxProps) {
   const {
     textArray,
@@ -31,6 +33,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
   } = props;
 
   const applyStyle = useApplyStyle('Stage/TextBox/textbox.scss');
+  const [showGear, setShowGear] = useState(false);
 
   useEffect(() => {
     function settleText() {
@@ -39,14 +42,32 @@ export default function IMSSTextbox(props: ITextboxProps) {
       textArray.forEach((e) => {
         e.className = applyStyle('TextBox_textElement_Settled', styles.TextBox_textElement_Settled);
       });
+
+      // 文字播放完成后显示齿轮
+      setShowGear(true);
+    }
+
+    // 监听用户交互事件，当用户点击下一句时隐藏齿轮
+    function hideGearOnNext() {
+      setShowGear(false);
     }
 
     WebGAL.events.textSettle.on(settleText);
+    WebGAL.events.userInteractNext.on(hideGearOnNext);
+
     return () => {
       WebGAL.events.textSettle.off(settleText);
+      WebGAL.events.userInteractNext.off(hideGearOnNext);
     };
   }, []);
   let allTextIndex = 0;
+
+  // 计算总文字数量
+  let totalTextCount = 0;
+  textArray.forEach((line) => {
+    totalTextCount += line.length;
+  });
+
   const nameElementList = showName.map((line, index) => {
     const textline = line.map((en, index) => {
       const e = en.reactNode;
@@ -135,14 +156,15 @@ export default function IMSSTextbox(props: ITextboxProps) {
       //   return <br key={`br${index}`} />;
       // }
       let delay = allTextIndex * textDelay;
+      const currentIndex = allTextIndex;
       allTextIndex++;
       let prevLength = currentConcatDialogPrev.length;
-      if (currentConcatDialogPrev !== '' && allTextIndex >= prevLength) {
+      if (currentConcatDialogPrev !== '' && currentIndex >= prevLength) {
         delay = delay - prevLength * textDelay;
       }
       const styleClassName = ' ' + css(style);
       const styleAllText = ' ' + css(style_alltext);
-      if (allTextIndex < prevLength) {
+      if (currentIndex < prevLength) {
         return (
           <span
             // data-text={e}
@@ -159,6 +181,8 @@ export default function IMSSTextbox(props: ITextboxProps) {
           </span>
         );
       }
+      const isLastText = currentIndex === totalTextCount - 1;
+
       return (
         <span
           // data-text={e}
@@ -172,6 +196,13 @@ export default function IMSSTextbox(props: ITextboxProps) {
             <span className={applyStyle('outer', styles.outer) + styleClassName + styleAllText}>{e}</span>
             {isUseStroke && <span className={applyStyle('inner', styles.inner) + styleAllText}>{e}</span>}
           </span>
+
+          {/* 在最后一个文字后面添加齿轮 */}
+          {isLastText && showGear && (
+            <span className={styles.gearInline}>
+              <img src={gear} alt="齿轮" className={styles.gearInlineIcon} />
+            </span>
+          )}
         </span>
       );
     });

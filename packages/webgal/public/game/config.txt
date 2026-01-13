@@ -2,7 +2,7 @@ Game_name:WebGAL_MyGO;
 Game_key:MyGO;
 Title_img:title.png;
 Title_bgm:s_Title.mp3;
-Game_Logo:WebGalEnter.png;
+Game_Logo:WebGalEnter.png|WebGalEnter2.png;
 Default_Language:zh_CN;
 Show_panic:true;
 Enable_Appreciation:true;
