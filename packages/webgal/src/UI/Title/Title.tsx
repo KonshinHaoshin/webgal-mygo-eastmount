@@ -14,7 +14,19 @@ import useConfigData from '@/hooks/useConfigData';
 import { playBgm } from '@/Core/controller/stage/playBgm';
 import { continueGame, startGame } from '@/Core/controller/gamePlay/startContinueGame';
 import { showGlogalDialog } from '../GlobalDialog/GlobalDialog';
+import ImageButton from './ImageButton';
 import styles from './title.module.scss';
+
+import start_on from '@/assets/image/sg/05_start_on.png';
+import start from '@/assets/image/sg/05_start.png';
+import load_on from '@/assets/image/sg/06_load_on.png';
+import load from '@/assets/image/sg/06_load.png';
+import extra_on from '@/assets/image/sg/07_extra_on.png';
+import extra from '@/assets/image/sg/07_extra.png';
+import exit_on from '@/assets/image/sg/10_exit_on.png';
+import exit from '@/assets/image/sg/10_exit.png';
+import config_on from '@/assets/image/sg/08_config_on.png';
+import config_button from '@/assets/image/sg/08_config.png';
 
 /** 标题页 */
 export default function Title() {
@@ -65,89 +77,68 @@ export default function Title() {
               } as unknown as CSSProperties
             }
           >
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
+            <ImageButton
+              normalImage={start}
+              hoverImage={start_on}
+              altText={t('start.title')}
               onClick={() => {
                 startGame();
                 playSeClick();
               }}
               onMouseEnter={playSeEnter}
-            >
-              <div
-                className={applyStyle('Title_button_text', styles.Title_button_text)}
-                data-content={t('start.title')}
-              >
-                {t('start.title')}
-              </div>
-            </div>
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
+            />
+            <ImageButton
+              normalImage={load}
+              hoverImage={load_on}
+              altText={t('continue.title')}
               onClick={async () => {
                 playSeClick();
                 dispatch(setVisibility({ component: 'showTitle', visibility: false }));
                 continueGame();
               }}
               onMouseEnter={playSeEnter}
-            >
-              <div
-                className={applyStyle('Title_button_text', styles.Title_button_text)}
-                data-content={t('continue.title')}
-              >
-                {t('continue.title')}
-              </div>
-            </div>
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
+            />
+            <ImageButton
+              normalImage={config_button}
+              hoverImage={config_on}
+              altText={t('options.title')}
               onClick={() => {
                 playSeClick();
                 dispatch(setVisibility({ component: 'showMenuPanel', visibility: true }));
                 dispatch(setMenuPanelTag(MenuPanelTag.Option));
               }}
               onMouseEnter={playSeEnter}
-            >
-              <div
-                className={applyStyle('Title_button_text', styles.Title_button_text)}
-                data-content={t('options.title')}
-              >
-                {t('options.title')}
-              </div>
-            </div>
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
+            />
+            <ImageButton
+              normalImage={load}
+              hoverImage={load_on}
+              altText={t('load.title')}
               onClick={() => {
                 playSeClick();
                 dispatch(setVisibility({ component: 'showMenuPanel', visibility: true }));
                 dispatch(setMenuPanelTag(MenuPanelTag.Load));
               }}
               onMouseEnter={playSeEnter}
-            >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={t('load.title')}>
-                {t('load.title')}
-              </div>
-            </div>
+            />
             {GUIState.enableAppreciationMode && (
-              <div
-                className={`${applyStyle('Title_button', styles.Title_button)} ${
-                  !hasAppreciationItems ? styles.Title_button_disabled : ''
-                }`}
+              <ImageButton
+                normalImage={extra}
+                hoverImage={extra_on}
+                altText={t('extra.title')}
                 onClick={() => {
                   if (hasAppreciationItems) {
                     playSeClick();
                     dispatch(setVisibility({ component: 'showExtra', visibility: true }));
                   }
                 }}
+                disabled={!hasAppreciationItems}
                 onMouseEnter={playSeEnter}
-              >
-                <div
-                  className={applyStyle('Title_button_text', styles.Title_button_text)}
-                  data-content={t('extra.title')}
-                >
-                  {t('extra.title')}
-                </div>
-              </div>
+              />
             )}
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
+            <ImageButton
+              normalImage={exit}
+              hoverImage={exit_on}
+              altText={t('exit.title')}
               onClick={() => {
                 playSeClick();
                 showGlogalDialog({
@@ -161,11 +152,7 @@ export default function Title() {
                 });
               }}
               onMouseEnter={playSeEnter}
-            >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={t('exit.title')}>
-                {t('exit.title')}
-              </div>
-            </div>
+            />
           </div>
         </div>
       )}
