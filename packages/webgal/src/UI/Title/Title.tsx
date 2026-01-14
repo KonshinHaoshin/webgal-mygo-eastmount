@@ -1,4 +1,4 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { config } from '@/config/mygo';
 import { __INFO } from '@/config/info';
@@ -46,6 +46,57 @@ export default function Title() {
   const appreciationItems = useSelector((state: RootState) => state.userData.appreciationData);
   const hasAppreciationItems = appreciationItems.bgm.length > 0 || appreciationItems.cg.length > 0;
 
+  // 状态控制是否显示Press Enter按钮
+  // const [showPressEnter, setShowPressEnter] = useState(true);
+  // const [showButtonList, setShowButtonList] = useState(false);
+  // const [isFlashing, setIsFlashing] = useState(false);
+  // const pressEnterButtonRef = useRef<HTMLButtonElement>(null);
+
+  // const handlePressEnterClick = () => {
+  //   if (isFlashing) return; // 如果正在闪烁，不重复触发
+
+  //   playSeClick();
+  //   setIsFlashing(true);
+
+  //   // 开始闪烁效果
+  //   setTimeout(() => {
+  //     setShowPressEnter(false);
+  //     setShowButtonList(true);
+  //     setIsFlashing(false);
+  //     // 播放背景音乐
+  //     playBgm(GUIState.titleBgm);
+  //     // 如果需要全屏，则进入全屏模式
+  //     if (fullScreen === fullScreenOption.on) {
+  //       document.documentElement.requestFullscreen();
+  //       if (keyboard) keyboard.lock(['Escape', 'F11']);
+  //     }
+  //   }, 500); // 闪烁动画持续时间
+  // };
+
+  // 监听回车键
+  // useEffect(() => {
+  //   const handleKeyDown = (event: KeyboardEvent) => {
+  //     if (showPressEnter && !showButtonList && !isFlashing) {
+  //       if (event.key === 'Enter' || event.key === ' ') {
+  //         event.preventDefault();
+  //         handlePressEnterClick();
+  //       }
+  //     }
+  //   };
+
+  //   window.addEventListener('keydown', handleKeyDown);
+  //   return () => {
+  //     window.removeEventListener('keydown', handleKeyDown);
+  //   };
+  // }, [showPressEnter, showButtonList, isFlashing]);
+
+  // 自动聚焦到Press Enter按钮（暂时注释，下次更新使用）
+  // useEffect(() => {
+  //   if (showPressEnter && pressEnterButtonRef.current) {
+  //     pressEnterButtonRef.current.focus();
+  //   }
+  // }, [showPressEnter]);
+
   return (
     <>
       {GUIState.showTitle && <div className={applyStyle('Title_backup_background', styles.Title_backup_background)} />}
@@ -69,6 +120,7 @@ export default function Title() {
             backgroundSize: 'cover',
           }}
         >
+          {/* 主按钮列表 */}
           <div
             className={applyStyle('Title_buttonList', styles.Title_buttonList)}
             style={

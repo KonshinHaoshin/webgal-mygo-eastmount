@@ -1,9 +1,93 @@
+@charset "UTF-8";
 .Title_main {
   width: 100%;
   height: 100%;
   position: absolute;
   z-index: 13;
   background-position: center;
+}
+
+.pressEnterContainer {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  transform: scale(1.75) translateY(50px);
+  justify-content: center;
+  align-items: center;
+}
+
+.pressEnterButton {
+  position: relative;
+  border: none;
+  border-radius: 0;
+  cursor: auto;
+  transition: all 0.3s ease;
+  width: 280px;
+  height: 48px;
+  /* 与文字高度一致 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(90deg, rgba(15, 15, 15, 0) 0%, #0f0f0f 15%, #0a0a0a 85%, rgba(15, 15, 15, 0) 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.9);
+  animation: buttonFade 2s ease-in-out infinite alternate;
+}
+
+.pressEnterButton:hover {
+  animation: buttonFade 1s ease-in-out infinite alternate;
+}
+
+.pressEnterText {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 1.7rem;
+  font-weight: 100;
+  letter-spacing: 1px;
+  color: #c9a742;
+  text-shadow: 1px 1px 0 #6d5815, -1px -1px 0 #6d5815, 1px -1px 0 #6d5815, -1px 1px 0 #6d5815;
+}
+
+/* 整个按钮的透明度变换动画 */
+@keyframes buttonFade {
+  0% {
+    opacity: 0.6;
+    filter: brightness(0.9);
+  }
+  50% {
+    opacity: 0.8;
+    filter: brightness(1);
+  }
+  100% {
+    opacity: 1;
+    filter: brightness(1.1);
+  }
+}
+
+/* 闪烁动画 */
+@keyframes flash {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+  25% {
+    opacity: 0.3;
+    filter: brightness(0.5);
+  }
+  50% {
+    opacity: 1;
+    filter: brightness(1.5);
+  }
+  75% {
+    opacity: 0.3;
+    filter: brightness(0.5);
+  }
+  100% {
+    opacity: 0;
+    filter: brightness(0);
+  }
+}
+
+.flashing {
+  animation: flash 0.5s ease-in-out forwards;
 }
 
 .Title_buttonList {
