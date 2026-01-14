@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import styles from './SGUI.module.scss';
@@ -7,6 +7,10 @@ import auto_button_on from '@/assets/image/sg/auto_button_on.png';
 import auto_button from '@/assets/image/sg/auto_button.png';
 import skip_button from '@/assets/image/sg/skip_button.png';
 import skip_button_on from '@/assets/image/sg/skip_button_on.png';
+// 导入实际的游戏控制函数
+import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
+import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
+import { WebGAL } from '@/Core/WebGAL';
 
 export default function Sgui() {
     const [isAutoOn, setIsAutoOn] = useState(false);
@@ -16,16 +20,32 @@ export default function Sgui() {
     const GUIStore = useSelector((state: RootState) => state.GUI);
     const stageState = useSelector((state: RootState) => state.stage);
 
+    // 监听游戏状态变化
+    useEffect(() => {
+        setIsAutoOn(WebGAL.gameplay.isAuto);
+        setIsSkipOn(WebGAL.gameplay.isFast);
+    }, []);
+
+    // 定期更新按钮状态
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIsAutoOn(WebGAL.gameplay.isAuto);
+            setIsSkipOn(WebGAL.gameplay.isFast);
+        }, 100); // 每100ms检查一次状态
+
+        return () => clearInterval(interval);
+    }, []);
+
     const handleAutoClick = () => {
-        setIsAutoOn(!isAutoOn);
-        // 这里可以添加auto模式的实际逻辑
-        console.log('Auto mode:', !isAutoOn ? 'ON' : 'OFF');
+        switchAuto();
+        // 更新本地状态
+        setIsAutoOn(WebGAL.gameplay.isAuto);
     };
 
     const handleSkipClick = () => {
-        setIsSkipOn(!isSkipOn);
-        // 这里可以添加skip模式的实际逻辑
-        console.log('Skip mode:', !isSkipOn ? 'ON' : 'OFF');
+        switchFast();
+        // 更新本地状态
+        setIsSkipOn(WebGAL.gameplay.isFast);
     };
 
     // 类似BottomControlPanel的显示条件
