@@ -8,10 +8,11 @@ import { textSize } from '@/store/userDataInterface';
 import { useSelector } from 'react-redux';
 import { RootState } from '@/store/store';
 import { useValue } from '@/hooks/useValue';
-
-import autoPNG from '@/assets/image/sg/auto.png';
 import gear from '@/assets/image/sg/gear.png';
-
+// auto,skip,normal
+import autoPNG from '@/assets/image/sg/auto.png';
+import gearPNG from '@/assets/image/sg/textbox_gear.png';
+import skip from '@/assets/image/sg/skip.png';
 export default function IMSSTextbox(props: ITextboxProps) {
   const {
     textArray,
@@ -315,9 +316,23 @@ export default function IMSSTextbox(props: ITextboxProps) {
             </div>
 
             {/* 自动模式图标 */}
-            {(WebGAL.gameplay.isAuto || WebGAL.gameplay.isFast) && (
+            {WebGAL.gameplay.isAuto && (
               <div className={styles.autoIndicator}>
                 <img src={autoPNG} alt="自动模式" className={styles.autoIcon} />
+              </div>
+            )}
+
+            {/* 齿轮图标 - 正常情况下显示 */}
+            {!WebGAL.gameplay.isFast && (
+              <div className={styles.gearIndicator}>
+                <img src={gearPNG} alt="齿轮" className={styles.gearIcon} />
+              </div>
+            )}
+
+            {/* Skip图标 - fast/skip模式下显示（覆盖齿轮图标） */}
+            {WebGAL.gameplay.isFast && (
+              <div className={styles.skipIndicator}>
+                <img src={skip} alt="跳过" className={styles.skipIcon} />
               </div>
             )}
           </div>
