@@ -25,7 +25,7 @@
     background-size: contain;
     background-position: center;
     background-repeat: no-repeat;
-    scale: 1.1;
+    scale: 1;
     bottom: 50px;
 }
 
@@ -70,7 +70,7 @@
     padding: 0 1em 0 1em;
     /* 缩小左右内边距 */
     position: absolute;
-    left: 4%;
+    left: 8%;
     // 改为水平居中
     bottom: 220px;
     height: 80px;
@@ -91,7 +91,7 @@
     background-repeat: no-repeat;
     background-size: auto;
     scale: 2;
-    left: 265px;
+    left: 375px;
 }
 
 .miniAvatarContainer {
