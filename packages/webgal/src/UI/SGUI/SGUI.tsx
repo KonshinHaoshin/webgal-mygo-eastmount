@@ -8,8 +8,8 @@ import auto_button from '@/assets/image/sg/auto_button.png';
 import skip_button from '@/assets/image/sg/skip_button.png';
 import skip_button_on from '@/assets/image/sg/skip_button_on.png';
 // 导入实际的游戏控制函数
-import { switchAuto } from '@/Core/controller/gamePlay/autoPlay';
-import { switchFast } from '@/Core/controller/gamePlay/fastSkip';
+import { switchAuto, stopAuto } from '@/Core/controller/gamePlay/autoPlay';
+import { switchFast, stopFast } from '@/Core/controller/gamePlay/fastSkip';
 import { WebGAL } from '@/Core/WebGAL';
 
 export default function Sgui() {
@@ -19,6 +19,14 @@ export default function Sgui() {
     // 获取状态，类似BottomControlPanel的显示逻辑
     const GUIStore = useSelector((state: RootState) => state.GUI);
     const stageState = useSelector((state: RootState) => state.stage);
+
+    // 当文本框关闭时（showTextBox 或 setTextbox:hide），同时关闭自动播放和快进
+    useEffect(() => {
+        if (!GUIStore.showTextBox || stageState.isDisableTextbox) {
+            stopAuto();
+            stopFast();
+        }
+    }, [GUIStore.showTextBox, stageState.isDisableTextbox]);
 
     // 监听游戏状态变化
     useEffect(() => {
@@ -48,8 +56,9 @@ export default function Sgui() {
         setIsSkipOn(WebGAL.gameplay.isFast);
     };
 
-    // 类似BottomControlPanel的显示条件
-    const shouldShowSGUI = GUIStore.showTextBox && stageState.enableFilm === '';
+    // 与 Stage 中 TextBox 的显示条件一致：showTextBox 且未禁用文本框（setTextbox:hide 会设置 isDisableTextbox）
+    const shouldShowSGUI =
+        GUIStore.showTextBox && stageState.enableFilm === '' && !stageState.isDisableTextbox;
 
     if (!shouldShowSGUI) {
         return null;
