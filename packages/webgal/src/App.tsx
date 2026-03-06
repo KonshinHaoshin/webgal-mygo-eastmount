@@ -12,7 +12,6 @@ import Menu from '@/UI/Menu/Menu';
 import GlobalDialog from '@/UI/GlobalDialog/GlobalDialog';
 import PanicOverlay from '@/UI/PanicOverlay/PanicOverlay';
 import DevPanel from '@/UI/DevPanel/DevPanel';
-import Sgui from '@/UI/SGUI/SGUI';
 import { WebGAL } from './Core/WebGAL';
 
 export default function App() {
@@ -52,7 +51,6 @@ export default function App() {
     <div className="App" ref={appRef}>
       <Translation />
       <Stage />
-      <Sgui />
       <BottomControlPanel />
       <BottomControlPanelFilm />
       <Backlog />

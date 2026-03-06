@@ -13,6 +13,7 @@ import gear from '@/assets/image/sg/gear.png';
 import autoPNG from '@/assets/image/sg/auto.png';
 import gearPNG from '@/assets/image/sg/textbox_gear.png';
 import skip from '@/assets/image/sg/skip.png';
+import Sgui from '@/UI/SGUI/SGUI';
 export default function IMSSTextbox(props: ITextboxProps) {
   const {
     textArray,
@@ -48,19 +49,17 @@ export default function IMSSTextbox(props: ITextboxProps) {
       setShowGear(true);
     }
 
-    // 监听用户交互事件，当用户点击下一句时隐藏齿轮
-    function hideGearOnNext() {
-      setShowGear(false);
-    }
-
     WebGAL.events.textSettle.on(settleText);
-    WebGAL.events.userInteractNext.on(hideGearOnNext);
 
     return () => {
       WebGAL.events.textSettle.off(settleText);
-      WebGAL.events.userInteractNext.off(hideGearOnNext);
     };
   }, []);
+
+  useEffect(() => {
+    // 只在实际进入新一句时隐藏齿轮，避免“第一次点击只消齿轮”
+    setShowGear(false);
+  }, [currentDialogKey]);
   let allTextIndex = 0;
 
   // 计算总文字数量
@@ -259,6 +258,21 @@ export default function IMSSTextbox(props: ITextboxProps) {
             data-waiting={isWaiting.value ? 'true' : 'false'}
           />
           <div
+            className={
+              applyStyle('TextBox_main', styles.TextBox_main) +
+              ' ' +
+              applyStyle('TextBox_Background', styles.TextBox_Background) +
+              ' ' +
+              (miniAvatar === ''
+                ? applyStyle('TextBox_main_miniavatarOff', styles.TextBox_main_miniavatarOff)
+                : undefined)
+            }
+            style={{
+              opacity: `${textboxOpacity / 100}`,
+            }}
+            data-waiting={isWaiting.value ? 'true' : 'false'}
+          />
+          <div
             id="textBoxMain"
             className={
               applyStyle('TextBox_main', styles.TextBox_main) +
@@ -307,7 +321,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
               style={{
                 fontSize,
                 flexFlow: 'column',
-                overflow: 'hidden',
+                overflow: 'visible',
                 paddingLeft: '0.1em',
                 // lineHeight: textSizeState === textSize.medium ? '2.2em' : '2em', // 不加的话上半拼音可能会被截断，同时保持排版整齐
               }}
@@ -335,6 +349,9 @@ export default function IMSSTextbox(props: ITextboxProps) {
                 <img src={skip} alt="跳过" className={styles.skipIcon} />
               </div>
             )}
+
+            {/* AUTO / SKIP 按钮，随文本框一起显隐与渐入渐出 */}
+            <Sgui embedded />
           </div>
         </div>
       )}

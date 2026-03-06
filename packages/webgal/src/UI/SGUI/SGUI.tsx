@@ -12,57 +12,62 @@ import { switchAuto, stopAuto } from '@/Core/controller/gamePlay/autoPlay';
 import { switchFast, stopFast } from '@/Core/controller/gamePlay/fastSkip';
 import { WebGAL } from '@/Core/WebGAL';
 
-export default function Sgui() {
-    const [isAutoOn, setIsAutoOn] = useState(false);
-    const [isSkipOn, setIsSkipOn] = useState(false);
+interface SguiProps {
+  /** 内嵌在文本框内时为 true，随文本框一起显隐与渐入渐出 */
+  embedded?: boolean;
+}
 
-    // 获取状态，类似BottomControlPanel的显示逻辑
-    const GUIStore = useSelector((state: RootState) => state.GUI);
-    const stageState = useSelector((state: RootState) => state.stage);
+export default function Sgui(props: SguiProps = {}) {
+  const { embedded = false } = props;
+  const [isAutoOn, setIsAutoOn] = useState(false);
+  const [isSkipOn, setIsSkipOn] = useState(false);
 
-    // 当文本框关闭时（showTextBox 或 setTextbox:hide），同时关闭自动播放和快进
-    useEffect(() => {
-        if (!GUIStore.showTextBox || stageState.isDisableTextbox) {
-            stopAuto();
-            stopFast();
-        }
-    }, [GUIStore.showTextBox, stageState.isDisableTextbox]);
+  const GUIStore = useSelector((state: RootState) => state.GUI);
+  const stageState = useSelector((state: RootState) => state.stage);
 
-    // 监听游戏状态变化
-    useEffect(() => {
-        setIsAutoOn(WebGAL.gameplay.isAuto);
-        setIsSkipOn(WebGAL.gameplay.isFast);
-    }, []);
-
-    // 定期更新按钮状态
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIsAutoOn(WebGAL.gameplay.isAuto);
-            setIsSkipOn(WebGAL.gameplay.isFast);
-        }, 100); // 每100ms检查一次状态
-
-        return () => clearInterval(interval);
-    }, []);
-
-    const handleAutoClick = () => {
-        switchAuto();
-        // 更新本地状态
-        setIsAutoOn(WebGAL.gameplay.isAuto);
-    };
-
-    const handleSkipClick = () => {
-        switchFast();
-        // 更新本地状态
-        setIsSkipOn(WebGAL.gameplay.isFast);
-    };
-
-    // 与 Stage 中 TextBox 的显示条件一致：showTextBox 且未禁用文本框（setTextbox:hide 会设置 isDisableTextbox）
-    const shouldShowSGUI =
-        GUIStore.showTextBox && stageState.enableFilm === '' && !stageState.isDisableTextbox;
-
-    if (!shouldShowSGUI) {
-        return null;
+  // 非内嵌模式：文本框关闭时关闭自动/快进；内嵌模式：卸载时关闭
+  useEffect(() => {
+    if (embedded) {
+      return () => {
+        stopAuto();
+        stopFast();
+      };
     }
+    if (!GUIStore.showTextBox || stageState.isDisableTextbox) {
+      stopAuto();
+      stopFast();
+    }
+  }, [embedded, GUIStore.showTextBox, stageState.isDisableTextbox]);
+
+  useEffect(() => {
+    setIsAutoOn(WebGAL.gameplay.isAuto);
+    setIsSkipOn(WebGAL.gameplay.isFast);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setIsAutoOn(WebGAL.gameplay.isAuto);
+      setIsSkipOn(WebGAL.gameplay.isFast);
+    }, 100);
+    return () => clearInterval(interval);
+  }, []);
+
+  const handleAutoClick = () => {
+    switchAuto();
+    setIsAutoOn(WebGAL.gameplay.isAuto);
+  };
+
+  const handleSkipClick = () => {
+    switchFast();
+    setIsSkipOn(WebGAL.gameplay.isFast);
+  };
+
+  // 内嵌时由父级（文本框）控制显隐，不在此处判断
+  if (!embedded) {
+    const shouldShowSGUI =
+      GUIStore.showTextBox && stageState.enableFilm === '' && !stageState.isDisableTextbox;
+    if (!shouldShowSGUI) return null;
+  }
 
     return (
         <div className={styles.SGUI}>

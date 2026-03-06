@@ -232,7 +232,16 @@ $height: 330px;
 
 .text {
     //line-height: 2em;
-    overflow: hidden;
+    overflow: visible;
+    padding-top: 0.3em;
+}
+
+.text ruby {
+    ruby-position: over;
+}
+
+.text rt {
+    line-height: 1;
 }
 
 .autoIndicator {
