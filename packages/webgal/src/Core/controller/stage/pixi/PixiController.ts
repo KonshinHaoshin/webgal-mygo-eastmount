@@ -84,7 +84,7 @@ window.PIXI = PIXI;
 INSTALLED.push(GifResource);
 
 export default class PixiStage {
-  public static assignTransform<T extends ITransform>(target: T, source?: ITransform) {
+  public static assignTransform<T extends ITransform>(target: T, source?: ITransform, convertAlpha = true) {
     if (!source) return;
     const targetScale = target.scale;
     const targetPosition = target.position;
@@ -93,6 +93,13 @@ export default class PixiStage {
     Object.assign(target, source);
     target.scale = targetScale;
     target.position = targetPosition;
+    if (convertAlpha) {
+      const sourceAlpha = source.alpha;
+      if (sourceAlpha !== undefined) {
+        target.alpha = 1;
+        (target as any).alphaFilterVal = sourceAlpha;
+      }
+    }
   }
 
   /**
@@ -310,6 +317,14 @@ export default class PixiStage {
   public removeAnimation(key: string) {
     const index = this.stageAnimations.findIndex((e) => e.key === key);
     this.removeAnimationByIndex(index);
+  }
+
+  public removeAnimationByTargetKey(targetKey: string) {
+    let index = this.stageAnimations.findIndex((e) => e.targetKey === targetKey);
+    while (index !== -1) {
+      this.removeAnimationByIndex(index);
+      index = this.stageAnimations.findIndex((e) => e.targetKey === targetKey);
+    }
   }
 
   public removeAnimationWithSetEffects(key: string) {
@@ -560,12 +575,8 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata) {
-      if (metadata.zIndex) {
-        thisFigureContainer.zIndex = metadata.zIndex;
-      }
-    }
+    this.applyFigureMetadata(thisFigureContainer, key);
+
     // 挂载
     this.figureContainer.addChild(thisFigureContainer);
     const figureUuid = uuid();
@@ -622,11 +633,7 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    // 设置 zIndex（如果 metadata 有）
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex !== undefined) {
-      thisFigureContainer.zIndex = metadata.zIndex;
-    }
+    this.applyFigureMetadata(thisFigureContainer, key);
 
     // 添加容器到舞台
     this.figureContainer.addChild(thisFigureContainer);
@@ -678,8 +685,7 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex) container.zIndex = metadata.zIndex;
+    this.applyFigureMetadata(container, key);
 
     this.figureContainer.addChild(container);
     this.figureObjects.push({
@@ -745,18 +751,13 @@ export default class PixiStage {
         return;
       }
 
-      const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
-      const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
-      const motionToSet = motionFromState?.motion ?? '';
-      const expressionToSet = expressionFromState?.expression ?? '';
-      let overrideBounds: [number, number, number, number] = motionFromState?.overrideBounds ?? [0, 0, 0, 0];
+      const currentMotionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+      let overrideBounds: [number, number, number, number] = currentMotionFromState?.overrideBounds ?? [0, 0, 0, 0];
 
       const models: any[] = [];
-
-      for (const modelConfig of modelConfigs) {
-        const { path: modelPath, x, y, xscale, yscale } = modelConfig;
-        try {
-          const model = await Live2D.Live2DModel.from(modelPath, {
+      const loadModelResults = await Promise.allSettled(
+        modelConfigs.map((config) => {
+          return Live2D.Live2DModel.from(config.path, {
             autoInteract: false,
             overWriteBounds: {
               x0: overrideBounds[0],
@@ -765,37 +766,59 @@ export default class PixiStage {
               y1: overrideBounds[3],
             },
           });
-          if (!model) continue;
-          // 暂时隐藏模型，等全部模型加载后再统一显示
-          model.visible = false;
-          this.setContainerInitialPosition({
-            container: container,
-            childContainer: model,
-            originalWidth: model.width,
-            originalHeight: model.height,
-            position: presetPosition,
-            isLive2DFigure: true,
-            overrideBounds: overrideBounds,
-            transform: { xOffset: x, yOffset: y, xScale: xscale, yScale: yscale },
-            isJsonlFigure: true,
-          });
-          models.push(model);
+        }),
+      ).catch((e) => {
+        console.error('addJsonlFigure 加载模型失败:', e);
+      });
 
-          // 每个模型加载完立刻设置 PARAM_IMPORT
-          if (paramImport !== null) {
-            try {
-              model.internalModel?.coreModel?.setParamFloat?.('PARAM_IMPORT', paramImport);
-              console.info(`✅ 设置 PARAM_IMPORT = ${paramImport} 给模型: ${modelPath}`);
-            } catch (e) {
-              console.warn(`❌ 设置 PARAM_IMPORT 失败 (${modelPath})`, e);
-            }
+      if (!loadModelResults) return;
+
+      for (let i = 0; i < loadModelResults.length; i++) {
+        const result = loadModelResults[i];
+        if (result.status !== 'fulfilled') {
+          console.warn(`JSONL 第${i}个模型加载失败, 原因: ${result.reason}`);
+          continue;
+        }
+        const { x, y, xscale, yscale } = modelConfigs[i];
+        const modelPath = modelConfigs[i].path;
+        const model = result.value;
+        if (!model) continue;
+        // 暂时隐藏模型，等全部模型加载后再统一显示
+        model.visible = false;
+        this.setContainerInitialPosition({
+          container: container,
+          childContainer: model,
+          originalWidth: model.width,
+          originalHeight: model.height,
+          position: presetPosition,
+          isLive2DFigure: true,
+          overrideBounds: overrideBounds,
+          transform: { xOffset: x, yOffset: y, xScale: xscale, yScale: yscale },
+          isJsonlFigure: true,
+        });
+        models.push(model);
+
+        // 每个模型加载完立刻设置 PARAM_IMPORT
+        if (paramImport !== null) {
+          try {
+            model.internalModel?.coreModel?.setParamFloat?.('PARAM_IMPORT', paramImport);
+            console.info(`✅ 设置 PARAM_IMPORT = ${paramImport} 给模型: ${modelPath}`);
+          } catch (e) {
+            console.warn(`❌ 设置 PARAM_IMPORT 失败 (${modelPath})`, e);
           }
-        } catch (err) {
-          console.warn(`加载模型 ${modelPath} 失败:`, err);
         }
       }
 
       // 应用从状态中读取的 motion 和 expression
+      const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
+      const expressionFromState = webgalStore.getState().stage.live2dExpression.find((e) => e.target === key);
+      const blinkFromState = webgalStore.getState().stage.live2dBlink.find((e) => e.target === key);
+      const focusFromState = webgalStore.getState().stage.live2dFocus.find((e) => e.target === key);
+      const motionToSet = motionFromState?.motion ?? '';
+      const expressionToSet = expressionFromState?.expression ?? '';
+      const blinkToSet = { ...baseBlinkParam, ...(blinkFromState?.blink ?? {}) };
+      const focusToSet = { ...baseFocusParam, ...(focusFromState?.focus ?? {}) };
+
       for (const model of models) {
         if (motionToSet) {
           // @ts-ignore
@@ -826,11 +849,7 @@ export default class PixiStage {
       this.removeStageObjectByKey(key);
     }
 
-    // 设置 zIndex（如果 metadata 有）
-    const metadata = this.getFigureMetadataByKey(key);
-    if (metadata?.zIndex !== undefined) {
-      thisFigureContainer.zIndex = metadata.zIndex;
-    }
+    this.applyFigureMetadata(thisFigureContainer, key);
 
     // 添加容器到舞台
     this.figureContainer.addChild(thisFigureContainer);
@@ -906,12 +925,7 @@ export default class PixiStage {
         this.removeStageObjectByKey(key);
       }
 
-      const metadata = this.getFigureMetadataByKey(key);
-      if (metadata) {
-        if (metadata.zIndex) {
-          thisFigureContainer.zIndex = metadata.zIndex;
-        }
-      }
+      this.applyFigureMetadata(thisFigureContainer, key);
       // 挂载
       this.figureContainer.addChild(thisFigureContainer);
       const figureUuid = uuid();
@@ -951,6 +965,89 @@ export default class PixiStage {
             let animation_index = 0;
             let priority_number = 3;
 
+            // 整理主模型和子模型信息
+            const modelInfos: Array<{
+              modelRelativePath: string;
+              offsetX: number;
+              offsetY: number;
+            }> = [];
+            if (wmdlConfig.modelRelativePath) {
+              modelInfos.push({
+                modelRelativePath: wmdlConfig.modelRelativePath,
+                offsetX: 0,
+                offsetY: 0,
+              });
+            }
+            if (wmdlConfig.subModels) {
+              wmdlConfig.subModels.forEach((subModel) => {
+                if (subModel.modelRelativePath) {
+                  modelInfos.push({
+                    modelRelativePath: subModel.modelRelativePath,
+                    offsetX: subModel.offsetX ?? 0,
+                    offsetY: subModel.offsetY ?? 0,
+                  });
+                }
+              });
+            }
+
+            const models: any[] = [];
+            const wmdlBaseDir = url.substring(0, url.lastIndexOf('/') + 1);
+
+            const loadResult = await Promise.allSettled(
+              modelInfos.map((modelInfo) =>
+                Live2D.Live2DModel.from(wmdlBaseDir + modelInfo.modelRelativePath, {
+                  autoInteract: false,
+                  overWriteBounds: {
+                    x0: overrideBounds[0],
+                    y0: overrideBounds[1],
+                    x1: overrideBounds[2],
+                    y1: overrideBounds[3],
+                  },
+                }),
+              ),
+            ).catch((err) => {
+              console.error(`WMDL 模型加载失败: ${err}`);
+            });
+
+            if (!loadResult) return;
+
+            for (let i = 0; i < loadResult.length; i++) {
+              const result = loadResult[i];
+              if (result.status !== 'fulfilled') {
+                console.warn(`WMDL 第${i}个模型加载失败, 原因: ${result.reason}`);
+                continue;
+              }
+              const modelInfo = modelInfos[i];
+              const model = result.value;
+              model.zIndex = i;
+              stage.setContainerInitialPosition({
+                container: thisFigureContainer,
+                childContainer: model,
+                originalWidth: model.width,
+                originalHeight: model.height,
+                position: presetPosition,
+                isLive2DFigure: true,
+                overrideBounds: overrideBounds,
+                transform: {
+                  xOffset: modelInfo.offsetX,
+                  yOffset: modelInfo.offsetY,
+                },
+              });
+
+              // 监听模型更新事件，确保口型参数不被motion覆盖
+              // @ts-ignore
+              model.internalModel.on('beforeModelUpdate', () => {
+                // 获取当前的口型值并重新应用
+                const currentMouthValue = instance.getCurrentMouthValue(key);
+                if (currentMouthValue !== null) {
+                  instance.setModelMouthY(key, currentMouthValue);
+                }
+              });
+
+              model.visible = false; // 先隐藏，等全部模型加载完再显示
+              models.push(model);
+            }
+
             // motion
             let motionToSet = '';
             const motionFromState = webgalStore.getState().stage.live2dMotion.find((e) => e.target === key);
@@ -983,72 +1080,6 @@ export default class PixiStage {
             }
             instance.updateL2dFocusByKey(key, focusToSet);
 
-            // 整理主模型和子模型信息
-            const modelInfos: Array<{
-              modelRelativePath: string;
-              offsetX: number;
-              offsetY: number;
-            }> = [];
-            if (wmdlConfig.modelRelativePath) {
-              modelInfos.push({
-                modelRelativePath: wmdlConfig.modelRelativePath,
-                offsetX: 0,
-                offsetY: 0,
-              });
-            }
-            if (wmdlConfig.subModels) {
-              wmdlConfig.subModels.forEach((subModel) => {
-                if (subModel.modelRelativePath) {
-                  modelInfos.push({
-                    modelRelativePath: subModel.modelRelativePath,
-                    offsetX: subModel.offsetX ?? 0,
-                    offsetY: subModel.offsetY ?? 0,
-                  });
-                }
-              });
-            }
-
-            const models: any[] = [];
-            const wmdlBaseDir = url.substring(0, url.lastIndexOf('/') + 1);
-            for (let i = 0; i < modelInfos.length; i++) {
-              const modelInfo = modelInfos[i];
-              const model = await Live2D.Live2DModel.from(wmdlBaseDir + modelInfo.modelRelativePath, {
-                autoInteract: false,
-                overWriteBounds: {
-                  x0: overrideBounds[0],
-                  y0: overrideBounds[1],
-                  x1: overrideBounds[2],
-                  y1: overrideBounds[3],
-                },
-              });
-              model.zIndex = i;
-              stage.setContainerInitialPosition({
-                container: thisFigureContainer,
-                childContainer: model,
-                originalWidth: model.width,
-                originalHeight: model.height,
-                position: presetPosition,
-                isLive2DFigure: true,
-                overrideBounds: overrideBounds,
-                transform: {
-                  xOffset: modelInfo.offsetX,
-                  yOffset: modelInfo.offsetY,
-                },
-              });
-
-              // 监听模型更新事件，确保口型参数不被motion覆盖
-              // @ts-ignore
-              model.internalModel.on('beforeModelUpdate', () => {
-                // 获取当前的口型值并重新应用
-                const currentMouthValue = instance.getCurrentMouthValue(key);
-                if (currentMouthValue !== null) {
-                  instance.setModelMouthY(key, currentMouthValue);
-                }
-              });
-
-              model.visible = false; // 先隐藏，等全部模型加载完再显示
-              models.push(model);
-            }
             // 全部模型加载完毕，显示它们
             models.forEach((model) => {
               model.visible = true;
@@ -1106,12 +1137,7 @@ export default class PixiStage {
         this.removeStageObjectByKey(key);
       }
 
-      const metadata = this.getFigureMetadataByKey(key);
-      if (metadata) {
-        if (metadata.zIndex) {
-          thisFigureContainer.zIndex = metadata.zIndex;
-        }
-      }
+      this.applyFigureMetadata(thisFigureContainer, key);
       // 挂载
       this.figureContainer.addChild(thisFigureContainer);
       const figureUuid = uuid();
@@ -1279,6 +1305,62 @@ export default class PixiStage {
           spineObject.state.setAnimation(0, animation, false);
         }
       }
+    }
+  }
+
+  public changeSpineSkinByKey(key: string, skin: string) {
+    if (!skin) return;
+
+    const target = this.figureObjects.find((e) => e.key === key && !e.isExiting);
+    if (target?.sourceType !== 'spine') return;
+
+    const container = target.pixiContainer;
+    if (!container) return;
+    const sprite = container.children[0] as PIXI.Container;
+    if (sprite?.children?.[0]) {
+      const spineObject = sprite.children[0];
+      // @ts-ignore
+      const skeleton = spineObject.skeleton;
+      // @ts-ignore
+      const skeletonData = skeleton?.data ?? spineObject.spineData;
+      const skinObject =
+        // @ts-ignore
+        skeletonData?.findSkin?.(skin) ??
+        // @ts-ignore
+        skeletonData?.skins?.find((item: any) => item.name === skin);
+
+      if (!skeleton || !skinObject) {
+        logger.warn(`Spine skin not found: ${skin} on ${key}`);
+        return;
+      }
+
+      try {
+        // @ts-ignore
+        if (typeof skeleton.setSkinByName === 'function') {
+          // @ts-ignore
+          skeleton.setSkinByName(skin);
+        } else {
+          // @ts-ignore
+          skeleton.setSkin(skinObject);
+        }
+      } catch (error) {
+        // @ts-ignore
+        skeleton.setSkin?.(skinObject);
+      }
+
+      // @ts-ignore
+      if (typeof skeleton.setSlotsToSetupPose === 'function') {
+        // @ts-ignore
+        skeleton.setSlotsToSetupPose();
+      } else {
+        // @ts-ignore
+        skeleton.setupPoseSlots?.();
+      }
+
+      // @ts-ignore
+      spineObject.state?.apply?.(skeleton);
+      // @ts-ignore
+      skeleton.updateWorldTransform?.();
     }
   }
 
@@ -1546,6 +1628,21 @@ export default class PixiStage {
   }
 
   /**
+   * 应用立绘元数据
+   */
+  private applyFigureMetadata(container: WebGALPixiContainer, key: string) {
+    const metadata = this.getFigureMetadataByKey(key);
+    if (metadata === undefined) return;
+
+    if (metadata?.blendMode !== undefined) {
+      container.blendMode = metadata.blendMode;
+    }
+    if (metadata?.zIndex !== undefined) {
+      container.zIndex = metadata.zIndex;
+    }
+  }
+
+  /**
    * 设置容器的初始定位
    */
   private setContainerInitialPosition(options: SetContainerInitialPositionOptions) {
@@ -1603,17 +1700,19 @@ export default class PixiStage {
 
       switch (positioningType) {
         case 'M_2_3':
+          childContainer.position.x = this.stageWidth / 2 + xOffset;
           childContainer.position.y = this.stageHeight / 1.2 + yOffset;
           break;
         case 'M_3_0_0':
         case 'M_3_1_0':
+          childContainer.position.x = xOffset;
           childContainer.position.y = this.stageHeight / 1.8 + yOffset;
           break;
         default:
+          childContainer.position.x = xOffset;
           childContainer.position.y = this.stageHeight / 2 + yOffset;
           break;
       }
-      childContainer.position.x = xOffset;
 
       if (position === 'bg') {
         container.setBaseX(this.stageWidth / 2);
@@ -1622,14 +1721,26 @@ export default class PixiStage {
         const targetWidth = originalWidth * targetScale;
         const targetHeight = originalHeight * targetScale;
         // 立绘尽量贴底
-        if (targetHeight < this.stageHeight && !(positioningType === 'M_2_3')) {
-          container.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
-        } else {
-          container.setBaseY(this.stageHeight / 2);
+        switch (positioningType) {
+          case 'M_2_3':
+            break;
+          default:
+            if (targetHeight < this.stageHeight) {
+              container.setBaseY(this.stageHeight / 2 + (this.stageHeight - targetHeight) / 2);
+            } else {
+              container.setBaseY(this.stageHeight / 2);
+            }
+            break;
         }
         // 立绘左中右
         if (position === 'center') {
-          container.setBaseX(this.stageWidth / 2);
+          switch (positioningType) {
+            case 'M_2_3':
+              break;
+            default:
+              container.setBaseX(this.stageWidth / 2);
+              break;
+          }
         }
         if (position === 'left') {
           switch (positioningType) {
@@ -1655,7 +1766,13 @@ export default class PixiStage {
         }
       }
 
-      container.pivot.set(0, this.stageHeight / 2);
+      switch (positioningType) {
+        case 'M_2_3':
+          break;
+        default:
+          container.pivot.set(0, this.stageHeight / 2);
+          break;
+      }
       container.addChild(childContainer);
     } catch (error) {
       console.error('设置容器初始位置失败:', error);

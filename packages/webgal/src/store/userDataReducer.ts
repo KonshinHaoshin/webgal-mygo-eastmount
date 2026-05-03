@@ -35,6 +35,7 @@ const initialOptionSet: IOptionData = {
   language: language.zhCn,
   voiceInterruption: voiceOption.yes,
   fullScreen: fullScreenOption.off,
+  enableBangControlPanel: true,
 };
 
 // 初始化用户数据
@@ -46,6 +47,7 @@ export const initState: IUserData = {
     bgm: [],
     cg: [],
   },
+  gameConfigInit: {},
 };
 
 const userDataSlice = createSlice({
@@ -68,7 +70,7 @@ const userDataSlice = createSlice({
       state.appreciationData.cg.forEach((e) => {
         if (url === e.url) {
           isExist = true;
-          e.url = url;
+          e.name = name;
           e.series = series;
         }
       });
@@ -83,7 +85,7 @@ const userDataSlice = createSlice({
       state.appreciationData.bgm.forEach((e) => {
         if (url === e.url) {
           isExist = true;
-          e.url = url;
+          e.name = name;
           e.series = series;
         }
       });
@@ -138,7 +140,8 @@ const userDataSlice = createSlice({
       Object.assign(state.optionData, initialOptionSet);
     },
     resetAllData(state) {
-      Object.assign(state, cloneDeep(initState));
+      const { gameConfigInit } = state;
+      Object.assign(state, { ...cloneDeep(initState), globalGameVar: cloneDeep(gameConfigInit), gameConfigInit });
     },
   },
 });

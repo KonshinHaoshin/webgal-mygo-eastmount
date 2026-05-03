@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react';
 import { initializeScript } from '@/Core/initializeScript';
 import Translation from '@/UI/Translation/Translation';
 import { Stage } from '@/Stage/Stage';
+import { BottomControlPanel } from './UI/BottomControlPanel/BottomControlPanel';
 import { BangBottomControlPanel } from './UI/BottomControlPanel/BangBottomControlPanel';
 import { BottomControlPanelFilm } from '@/UI/BottomControlPanel/BottomControlPanelFilm';
 import { Backlog } from '@/UI/Backlog/Backlog';
@@ -22,9 +23,15 @@ export default function App() {
 
     const app = appRef.current;
 
-    const isRotated = window.innerWidth < window.innerHeight;
-    const rotatedWindowWidth = isRotated ? window.innerHeight : window.innerWidth;
-    const rotatedWindowHeight = isRotated ? window.innerWidth : window.innerHeight;
+    const isVertical = WebGAL.stageWidth < WebGAL.stageHeight;
+
+    const shouldRotate = WebGAL.autoRotate
+      ? isVertical
+        ? window.innerWidth > window.innerHeight
+        : window.innerWidth < window.innerHeight
+      : false;
+    const rotatedWindowWidth = shouldRotate ? window.innerHeight : window.innerWidth;
+    const rotatedWindowHeight = shouldRotate ? window.innerWidth : window.innerHeight;
     const widthRatio = rotatedWindowWidth / WebGAL.stageWidth;
     const heightRatio = rotatedWindowHeight / WebGAL.stageHeight;
     const scale = Math.min(widthRatio, heightRatio);
@@ -34,6 +41,17 @@ export default function App() {
     app.style.scale = `${scale}`;
     app.style.left = `${(rotatedWindowWidth - WebGAL.stageWidth * scale) / 2}px`;
     app.style.top = `${(rotatedWindowHeight - WebGAL.stageHeight * scale) / 2}px`;
+
+    if (shouldRotate) {
+      const rotateDegree = isVertical ? -90 : 90;
+      document.documentElement.style.width = '100vh';
+      document.documentElement.style.height = '100vw';
+      document.documentElement.style.transform = `translate(-50%, -50%) rotate(${rotateDegree}deg)`;
+    } else {
+      document.documentElement.style.width = '100vw';
+      document.documentElement.style.height = '100vh';
+      document.documentElement.style.transform = 'translate(-50%, -50%) rotate(0deg)';
+    }
   };
 
   useEffect(() => {
@@ -51,6 +69,7 @@ export default function App() {
     <div className="App" ref={appRef}>
       <Translation />
       <Stage />
+      <BottomControlPanel />
       <BangBottomControlPanel />
       <BottomControlPanelFilm />
       <Backlog />
