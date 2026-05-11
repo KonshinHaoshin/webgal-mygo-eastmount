@@ -254,7 +254,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
                   }
                   style={{
                     opacity: `${textboxOpacity / 100}`,
-                    fontSize: '200%',
+                    fontSize: '150%',
                   }}
                 >
                   <span style={{ opacity: 0 }}>{nameElementList}</span>
@@ -262,7 +262,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
                 <div
                   className={applyStyle('TextBox_showName', styles.TextBox_showName)}
                   style={{
-                    fontSize: '200%',
+                    fontSize: '150%',
                   }}
                 >
                   {nameElementList}
