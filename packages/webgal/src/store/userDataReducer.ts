@@ -35,7 +35,6 @@ const initialOptionSet: IOptionData = {
   language: language.zhCn,
   voiceInterruption: voiceOption.yes,
   fullScreen: fullScreenOption.off,
-  enableBangControlPanel: true,
 };
 
 // 初始化用户数据

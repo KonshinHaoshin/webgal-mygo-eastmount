@@ -63,13 +63,6 @@ const fr = {
         display: {
           title: 'Affichage',
           options: {
-            enableBangControlPanel: {
-              title: 'Menu de style BanG Dream',
-              options: {
-                on: 'ON',
-                off: 'OFF',
-              },
-            },
             textSpeed: {
               title: "Vitesse d'affichage du texte",
               options: {

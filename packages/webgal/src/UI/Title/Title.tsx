@@ -1,5 +1,15 @@
-import { CSSProperties } from 'react';
+import { CSSProperties, ReactNode } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import {
+  Announcement,
+  FolderOpen,
+  Game,
+  Help,
+  Picture,
+  Power,
+  SettingTwo,
+  Trophy,
+} from '@icon-park/react';
 import { config } from '@/config/mygo';
 import { __INFO } from '@/config/info';
 import { RootState } from '@/store/store';
@@ -33,6 +43,132 @@ export default function Title() {
 
   const appreciationItems = useSelector((state: RootState) => state.userData.appreciationData);
   const hasAppreciationItems = appreciationItems.bgm.length > 0 || appreciationItems.cg.length > 0;
+  const iconProps = { theme: 'outline' as const, size: 26, fill: 'currentColor', strokeWidth: 2 };
+
+  const openOptionPanel = () => {
+    dispatch(setVisibility({ component: 'showMenuPanel', visibility: true }));
+    dispatch(setMenuPanelTag(MenuPanelTag.Option));
+  };
+
+  const openLoadPanel = () => {
+    dispatch(setVisibility({ component: 'showMenuPanel', visibility: true }));
+    dispatch(setMenuPanelTag(MenuPanelTag.Load));
+  };
+
+  const showNotice = (title: string, body: string) => {
+    showGlogalDialog({
+      title: `${title}\n${body}`,
+      leftText: tCommon('yes'),
+      rightText: '',
+      leftFunc: () => {},
+      rightFunc: () => {},
+    });
+  };
+
+  const titleMenuItems: Array<{
+    icon: ReactNode;
+    label: string;
+    subLabel: string;
+    disabled?: boolean;
+    onClick: () => void;
+  }> = [
+    {
+      icon: <Game {...iconProps} />,
+      label: t('start.title'),
+      subLabel: 'START',
+      onClick: () => {
+        startGame();
+        playSeClick();
+      },
+    },
+    {
+      icon: <Power {...iconProps} />,
+      label: t('continue.title'),
+      subLabel: 'CONTINUE',
+      onClick: async () => {
+        playSeClick();
+        dispatch(setVisibility({ component: 'showTitle', visibility: false }));
+        continueGame();
+      },
+    },
+    {
+      icon: <FolderOpen {...iconProps} />,
+      label: t('load.title'),
+      subLabel: 'LOAD',
+      onClick: () => {
+        playSeClick();
+        openLoadPanel();
+      },
+    },
+    {
+      icon: <SettingTwo {...iconProps} />,
+      label: t('options.title'),
+      subLabel: 'CONFIG',
+      onClick: () => {
+        playSeClick();
+        openOptionPanel();
+      },
+    },
+    {
+      icon: <Picture {...iconProps} />,
+      label: t('extra.title'),
+      subLabel: 'GALLERY',
+      disabled: !GUIState.enableAppreciationMode || !hasAppreciationItems,
+      onClick: () => {
+        if (!GUIState.enableAppreciationMode || !hasAppreciationItems) return;
+        playSeClick();
+        dispatch(setVisibility({ component: 'showExtra', visibility: true }));
+      },
+    },
+    {
+      icon: <Power {...iconProps} />,
+      label: t('exit.title'),
+      subLabel: 'EXIT',
+      onClick: () => {
+        playSeClick();
+        showGlogalDialog({
+          title: t('exit.tips'),
+          leftText: tCommon('yes'),
+          rightText: tCommon('no'),
+          leftFunc: () => {
+            window.close();
+          },
+          rightFunc: () => {},
+        });
+      },
+    },
+  ];
+
+  const shortcutItems = [
+    {
+      icon: <Announcement {...iconProps} />,
+      label: '公告',
+      subLabel: 'NOTICE',
+      onClick: () => showNotice('最新公告', '本周开发进度更新已同步。'),
+    },
+    {
+      icon: <Trophy {...iconProps} />,
+      label: '成就',
+      subLabel: 'ACHIEVEMENT',
+      onClick: () => showNotice('成就', '成就系统将在后续章节开放。'),
+    },
+    {
+      icon: <Picture {...iconProps} />,
+      label: '回想',
+      subLabel: 'RECOLLECTION',
+      onClick: () => {
+        if (GUIState.enableAppreciationMode) {
+          dispatch(setVisibility({ component: 'showExtra', visibility: true }));
+        }
+      },
+    },
+    {
+      icon: <Help {...iconProps} />,
+      label: '帮助',
+      subLabel: 'HELP',
+      onClick: openOptionPanel,
+    },
+  ];
 
   return (
     <>
@@ -57,6 +193,11 @@ export default function Title() {
             backgroundSize: 'cover',
           }}
         >
+          <div className={styles.Title_overlay} />
+          <section className={styles.Title_brand}>
+            <div className={styles.Title_brand_jp}>未做之事</div>
+            <div className={styles.Title_brand_en}>When Lilies Fall in Silence</div>
+          </section>
           <div
             className={applyStyle('Title_buttonList', styles.Title_buttonList)}
             style={
@@ -65,107 +206,65 @@ export default function Title() {
               } as unknown as CSSProperties
             }
           >
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
-              onClick={() => {
-                startGame();
-                playSeClick();
-              }}
-              onMouseEnter={playSeEnter}
-            >
-              <div
-                className={applyStyle('Title_button_text', styles.Title_button_text)}
-                data-content={t('start.title')}
-              >
-                {t('start.title')}
-              </div>
-            </div>
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
-              onClick={async () => {
-                playSeClick();
-                dispatch(setVisibility({ component: 'showTitle', visibility: false }));
-                continueGame();
-              }}
-              onMouseEnter={playSeEnter}
-            >
-              <div
-                className={applyStyle('Title_button_text', styles.Title_button_text)}
-                data-content={t('continue.title')}
-              >
-                {t('continue.title')}
-              </div>
-            </div>
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
-              onClick={() => {
-                playSeClick();
-                dispatch(setVisibility({ component: 'showMenuPanel', visibility: true }));
-                dispatch(setMenuPanelTag(MenuPanelTag.Option));
-              }}
-              onMouseEnter={playSeEnter}
-            >
-              <div
-                className={applyStyle('Title_button_text', styles.Title_button_text)}
-                data-content={t('options.title')}
-              >
-                {t('options.title')}
-              </div>
-            </div>
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
-              onClick={() => {
-                playSeClick();
-                dispatch(setVisibility({ component: 'showMenuPanel', visibility: true }));
-                dispatch(setMenuPanelTag(MenuPanelTag.Load));
-              }}
-              onMouseEnter={playSeEnter}
-            >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={t('load.title')}>
-                {t('load.title')}
-              </div>
-            </div>
-            {GUIState.enableAppreciationMode && (
-              <div
+            {titleMenuItems.map((item) => (
+              <button
                 className={`${applyStyle('Title_button', styles.Title_button)} ${
-                  !hasAppreciationItems ? styles.Title_button_disabled : ''
+                  item.disabled ? styles.Title_button_disabled : ''
                 }`}
-                onClick={() => {
-                  if (hasAppreciationItems) {
-                    playSeClick();
-                    dispatch(setVisibility({ component: 'showExtra', visibility: true }));
-                  }
-                }}
+                disabled={item.disabled}
+                key={item.subLabel}
+                onClick={item.onClick}
                 onMouseEnter={playSeEnter}
+                type="button"
               >
-                <div
-                  className={applyStyle('Title_button_text', styles.Title_button_text)}
-                  data-content={t('extra.title')}
-                >
-                  {t('extra.title')}
-                </div>
-              </div>
-            )}
-            <div
-              className={applyStyle('Title_button', styles.Title_button)}
-              onClick={() => {
-                playSeClick();
-                showGlogalDialog({
-                  title: t('exit.tips'),
-                  leftText: tCommon('yes'),
-                  rightText: tCommon('no'),
-                  leftFunc: () => {
-                    window.close();
-                  },
-                  rightFunc: () => {},
-                });
-              }}
-              onMouseEnter={playSeEnter}
-            >
-              <div className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={t('exit.title')}>
-                {t('exit.title')}
-              </div>
+                <span className={styles.Title_button_icon}>{item.icon}</span>
+                <span className={applyStyle('Title_button_text', styles.Title_button_text)} data-content={item.label}>
+                  <span>{item.label}</span>
+                  <small>{item.subLabel}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+          {/* <aside className={styles.Title_chapter_card}>
+            <div className={styles.Title_panel_label}>章节选择</div>
+            <div className={styles.Title_panel_sub}>CHAPTER</div>
+            <div className={styles.Title_chapter_no}>01</div>
+            <div className={styles.Title_chapter_name}>初遇</div>
+            <div className={styles.Title_chapter_en}>The First Meeting</div>
+          </aside>
+          <aside className={styles.Title_news_card}>
+            <div className={styles.Title_panel_label}>最新公告</div>
+            <div className={styles.Title_panel_sub}>NEWS</div>
+            <div className={styles.Title_news_row}>
+              <span>制作组寄语</span>
+              <time>05/20</time>
             </div>
+            <div className={styles.Title_news_row}>
+              <span>音乐专辑上架</span>
+              <time>05/18</time>
+            </div>
+            <div className={styles.Title_news_row}>
+              <span>角色介绍: 白羽</span>
+              <time>05/15</time>
+            </div>
+            <div className={styles.Title_news_more}>MORE &gt;</div>
+          </aside> */}
+          <div className={styles.Title_poem}>
+            <p>仙人抚我顶，结发受长生。</p>
+          </div>
+          <div className={styles.Title_shortcuts}>
+            {shortcutItems.map((item) => (
+              <button type="button" key={item.subLabel} onClick={item.onClick} onMouseEnter={playSeEnter}>
+                <span>{item.icon}</span>
+                <strong>{item.label}</strong>
+                <small>{item.subLabel}</small>
+              </button>
+            ))}
+          </div>
+          <div className={styles.Title_socials}>
+            <span>BILI</span>
+            <span>GITHUB</span>
+            <span>LOFT</span>
           </div>
         </div>
       )}

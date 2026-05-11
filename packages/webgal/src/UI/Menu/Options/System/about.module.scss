@@ -1,46 +1,48 @@
-.backButton{
+.backButton {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 50px;
   height: 50px;
-  background: rgba(0,0,0,0.1);
-  border-radius: 4px;
+  background: rgba(168, 190, 219, 0.08);
+  border: 1px solid rgba(168, 190, 219, 0.24);
   cursor: pointer;
+  color: #a8bedb;
 }
 
-.backButton:hover{
-  background: rgba(0,0,0,0.2);
+.backButton:hover {
+  background: rgba(168, 190, 219, 0.14);
+  color: #e6edf7;
 }
 
-.about{
+.about {
   padding: 10px 0 0 0;
 }
 
-.icon{
+.icon {
   display: inline-flex;
 }
 
-.title{
-  color: transparent;
-  background: linear-gradient(to left, #227D51, rgba(81, 110, 65, 1));
-  -webkit-background-clip: text;
-  font-size: 200%;
-  //border-bottom: 2px solid rgba(81, 110, 65, 0.9);
-  padding: 0.15em 0.5em 0.15em 0.1em;
-  font-weight: bold;
+.title {
+  color: #e6edf7;
+  font-size: 1.8rem;
+  padding: 0.15em 0.5em 0.15em 0;
+  font-weight: 600;
   margin-top: 20px;
+  letter-spacing: 0.08em;
 }
 
-.text{
-  color: rgba(81, 110, 65, 1);
+.text {
+  color: #a8bedb;
   padding: 0 0 0 10px;
-  font-size: 135%;
-  a{
-    color: rgba(81, 110, 65, 1);
+  font-size: 1.2rem;
+  line-height: 1.65;
+
+  a {
+    color: #e6edf7;
   }
 }
 
-.contributor{
+.contributor {
   padding: 0 10px 0 0;
 }

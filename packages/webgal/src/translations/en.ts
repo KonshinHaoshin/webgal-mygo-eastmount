@@ -70,13 +70,6 @@ const en = {
                 off: 'OFF',
               },
             },
-            enableBangControlPanel: {
-              title: 'BanG Dream Style Menu',
-              options: {
-                on: 'ON',
-                off: 'OFF',
-              },
-            },
             textSpeed: {
               title: 'Text Speed',
               options: {

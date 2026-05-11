@@ -27,17 +27,17 @@ export const MenuPanel = () => {
   const OptionTagOn = GUIState.currentMenuTag === MenuPanelTag.Option ? ` ${styles.MenuPanel_button_hl}` : ``;
 
   // 设置Menu按钮的颜色
-  const SaveTagColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
-  const LoadTagColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
+  const SaveTagColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `#e6edf7` : `#8fa4ce`;
+  const LoadTagColor = GUIState.currentMenuTag === MenuPanelTag.Load ? `#e6edf7` : `#8fa4ce`;
   const OptionTagColor =
-    GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
+    GUIState.currentMenuTag === MenuPanelTag.Option ? `#e6edf7` : `#8fa4ce`;
 
   // 设置Menu图标的颜色
-  const SaveIconColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `rgba(74, 34, 93, 0.9)` : `rgba(123,144,169,1)`;
+  const SaveIconColor = GUIState.currentMenuTag === MenuPanelTag.Save ? `#e6edf7` : `#8fa4ce`;
   const LoadIconColor =
-    GUIState.currentMenuTag === MenuPanelTag.Load ? `rgba(11, 52, 110, 0.9)` : `rgba(123,144,169,1)`;
+    GUIState.currentMenuTag === MenuPanelTag.Load ? `#e6edf7` : `#8fa4ce`;
   const OptionIconColor =
-    GUIState.currentMenuTag === MenuPanelTag.Option ? `rgba(81, 110, 65, 0.9)` : `rgba(123,144,169,1)`;
+    GUIState.currentMenuTag === MenuPanelTag.Option ? `#e6edf7` : `#8fa4ce`;
 
   return (
     <div className={styles.MenuPanel_main}>
@@ -68,8 +68,8 @@ export const MenuPanel = () => {
       />
       <MenuPanelButton
         iconName="title"
-        iconColor="rgba(123,144,169,1)"
-        tagColor="rgba(123,144,169,1)"
+        iconColor="#8fa4ce"
+        tagColor="#8fa4ce"
         clickFunc={() => {
           playSeDialogOpen();
           showGlogalDialog({
@@ -102,8 +102,8 @@ export const MenuPanel = () => {
 
       <MenuPanelButton
         iconName="exit"
-        iconColor="rgba(123,144,169,1)"
-        tagColor="rgba(123,144,169,1)"
+        iconColor="#8fa4ce"
+        tagColor="#8fa4ce"
         clickFunc={() => {
           playSeClick();
           dispatch(setVisibility({ component: 'showMenuPanel', visibility: false }));

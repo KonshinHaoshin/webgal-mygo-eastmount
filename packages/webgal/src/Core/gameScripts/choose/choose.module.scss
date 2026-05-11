@@ -7,48 +7,82 @@
   justify-content: center;
   align-items: center;
   z-index: 13;
-  background: rgba(0, 0, 0, 0.05);
-}
-
-.Choose_item {
-  font-family: "WebgalUI", serif;
-  cursor: pointer;
-  min-width: 50%;
-  padding: 0.25em 1em 0.25em 1em;
-  font-size: 265%;
-  color: #8E354A;
-  text-align: center;
-  border-radius: 4px;
-  border: 3px solid rgba(0, 0, 0, 0);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
-  background: rgba(255, 255, 255, 0.65);
-  margin: 0.25em 0 0.25em 0;
-  transition: background-color 0.5s, border 0.5s, font-weight 0.5s, box-shadow 0.5s;
-
-  &:hover {
-    background: rgba(255, 255, 255, 0.9);
-    box-shadow: 0 0 25px rgba(0, 0, 0, 0.35);
-    border: 3px solid #8E354A;
-  }
-}
-
-.Choose_item_disabled {
-  font-family: "WebgalUI", serif;
-  cursor: not-allowed;
-  min-width: 50%;
-  padding: 0.25em 1em 0.25em 1em;
-  font-size: 265%;
-  color: rgba(142, 53, 74, 0.5);
-  text-align: center;
-  border-radius: 4px;
-  border: 3px solid rgba(0, 0, 0, 0);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.25);
-  background: rgba(255, 255, 255, 0.5);
-  margin: 0.25em 0 0.25em 0;
-  transition: background-color 0.5s, border 0.5s, font-weight 0.5s, box-shadow 0.5s;
+  background: rgba(5, 10, 24, 0.18);
+  row-gap: 1.4rem;
 }
 
 .Choose_item_outer {
-  color: #000;
-  min-width: 50%;
+  color: #e6edf7;
+  min-width: 52%;
+  max-width: 68%;
+  animation: fadeInRight 260ms ease-out forwards;
+}
+
+.Choose_item,
+.Choose_item_disabled {
+  cursor: pointer;
+  width: 100%;
+  padding: 1.05rem 3.5rem;
+  box-sizing: border-box;
+  font-size: 2.2rem;
+  color: #e6edf7;
+  text-align: left;
+  border: 1px solid rgba(168, 190, 219, 0.48);
+  background:
+    linear-gradient(90deg, rgba(42, 54, 84, 0.58), rgba(12, 19, 34, 0.52)),
+    linear-gradient(135deg, rgba(168, 190, 219, 0.1), transparent 48%);
+  transition: background-color 0.2s, border-color 0.2s, transform 0.2s;
+  position: relative;
+  overflow: hidden;
+
+  &::after {
+    content: '';
+    width: 6rem;
+    height: 4.5rem;
+    display: inline-block;
+    position: absolute;
+    bottom: -0.5rem;
+    right: 1rem;
+    background-image: url('game/template/assets/theme/textbox-flower.png');
+    background-position: right bottom;
+    background-repeat: no-repeat;
+    background-size: contain;
+    opacity: 0.16;
+  }
+}
+
+.Choose_item:hover {
+  border-color: rgba(230, 237, 247, 0.74);
+  background:
+    linear-gradient(90deg, rgba(61, 79, 122, 0.62), rgba(12, 19, 34, 0.56)),
+    linear-gradient(135deg, rgba(168, 190, 219, 0.16), transparent 48%);
+  transform: translateX(0.45rem);
+}
+
+.Choose_item_disabled {
+  cursor: not-allowed;
+  color: rgba(168, 190, 219, 0.42);
+  border-color: rgba(168, 190, 219, 0.18);
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeOutLeft {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
 }

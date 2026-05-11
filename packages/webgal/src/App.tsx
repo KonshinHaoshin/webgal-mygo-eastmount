@@ -3,7 +3,6 @@ import { initializeScript } from '@/Core/initializeScript';
 import Translation from '@/UI/Translation/Translation';
 import { Stage } from '@/Stage/Stage';
 import { BottomControlPanel } from './UI/BottomControlPanel/BottomControlPanel';
-import { BangBottomControlPanel } from './UI/BottomControlPanel/BangBottomControlPanel';
 import { BottomControlPanelFilm } from '@/UI/BottomControlPanel/BottomControlPanelFilm';
 import { Backlog } from '@/UI/Backlog/Backlog';
 import Title from '@/UI/Title/Title';
@@ -70,7 +69,6 @@ export default function App() {
       <Translation />
       <Stage />
       <BottomControlPanel />
-      <BangBottomControlPanel />
       <BottomControlPanelFilm />
       <Backlog />
       <Title />

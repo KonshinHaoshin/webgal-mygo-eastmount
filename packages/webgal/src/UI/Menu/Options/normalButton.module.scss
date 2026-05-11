@@ -1,35 +1,22 @@
 .NormalButton {
-  font-size: 150%;
+  font-size: 1.22rem;
   box-sizing: border-box;
-  padding: 0.2em 1em 0.2em 1em;
-  color: #505050;
+  padding: 0.55rem 1.15rem;
+  color: #8fa4ce;
   cursor: pointer;
-  border: 2px solid #b4b4b4;
-  border-radius: 20px;
-  box-shadow: 0px 4px 0px #b4b4b4;
+  border: 1px solid rgba(168, 190, 219, 0.28);
+  background: rgba(27, 36, 59, 0.28);
   position: relative;
-  transition: color 0.15s ease-in-out;
-
-  &::before {
-    content: '';
-    position: absolute;
-    inset: 0.5rem 0.5rem 0.5rem 0.5rem;
-    background: #f2f2f2;
-    border-radius: 16px 16px 32px 16px;
-    z-index: -1;
-  }
+  transition: color 0.18s ease, border-color 0.18s ease, background 0.18s ease;
 }
 
 .NormalButton:hover {
-  color: #ff3b72;
+  color: #e6edf7;
+  border-color: rgba(230, 237, 247, 0.62);
 }
 
 .NormalButtonChecked {
-  color: #ff3b72;
-  border: 2px solid #ff3b72;
-  box-shadow: 0px 4px 0px #ff3b72;
-
-  &::before {
-    background: #ffe8ed;
-  }
+  color: #e6edf7;
+  border-color: rgba(230, 237, 247, 0.68);
+  background: rgba(168, 190, 219, 0.14);
 }
