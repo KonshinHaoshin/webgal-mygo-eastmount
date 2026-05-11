@@ -256,7 +256,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
                   data-sub-name={getNameSubLabel(showNameText)}
                   style={{
                     opacity: `${textboxOpacity / 100}`,
-                    fontSize: '132%',
+                    fontSize: '160%',
                   }}
                 >
                   <span style={{ opacity: 0 }}>{nameElementList}</span>
@@ -265,7 +265,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
                   className={applyStyle('TextBox_showName', styles.TextBox_showName)}
                   data-sub-name={getNameSubLabel(showNameText)}
                   style={{
-                    fontSize: '132%',
+                    fontSize: '160%',
                   }}
                 >
                   {nameElementList}
@@ -304,6 +304,8 @@ function getNameSubLabel(name: string): string {
     要乐奈: 'KANAME RANA',
     要樂奈: 'KANAME RANA',
     椎名立希: 'SHIINA TAKI',
+    丰川祥子: 'TOYOKAWA SAKIKO',
+    豐川祥子: 'TOYOKAWA SAKIKO',
   };
   if (nameMap[normalized]) return nameMap[normalized];
   if (/^[\w\s'-]+$/.test(normalized)) return normalized.toUpperCase();

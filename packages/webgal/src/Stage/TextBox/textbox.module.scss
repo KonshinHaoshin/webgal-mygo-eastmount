@@ -38,14 +38,15 @@ $muted: #8fa4ce;
   left: 54px;
   right: 54px;
   bottom: 54px;
-  min-height: 220px;
-  max-height: 220px;
+  min-height: 400px;
+  max-height: 400px;
   box-sizing: border-box;
   padding: 92px 170px 42px 142px;
   display: flex;
   flex-flow: column;
   align-items: flex-start;
   color: $text;
+  font-size: 18px;
   font-weight: 500;
   letter-spacing: 0.12em;
   pointer-events: none;
@@ -107,10 +108,10 @@ $muted: #8fa4ce;
   }
 
   &::after {
-    right: 34px;
+    right: 42px;
     bottom: 18px;
-    width: 152px;
-    height: 118px;
+    width: 210px;
+    height: 154px;
     background: url('game/ui-theme/textbox-flower.png') center / contain no-repeat;
     opacity: 0.34;
   }
@@ -127,7 +128,7 @@ $muted: #8fa4ce;
 
   &[data-waiting='true']::after {
     background:
-      url('game/ui-theme/butterfly-wait.png') right bottom / 54px 48px no-repeat,
+      url('game/ui-theme/butterfly-wait.png') right 12px bottom 8px / 78px 69px no-repeat,
       url('game/ui-theme/textbox-flower.png') center / contain no-repeat;
     animation: waitingButterfly 1.15s ease-in-out infinite;
   }
@@ -201,22 +202,23 @@ $muted: #8fa4ce;
   left: 76px;
   top: 12px;
   z-index: 4;
-  min-width: 250px;
-  height: 70px;
-  padding: 10px 48px 10px 72px;
+  min-width: 350px;
+  height: 78px;
+  padding: 10px 56px 10px 104px;
   box-sizing: border-box;
   border: 0;
   border-bottom: 1px solid rgba(168, 190, 219, 0.18);
   color: $text;
   overflow: hidden;
+  font-size: 22px;
 
   &::before {
     content: '';
     position: absolute;
-    left: 30px;
-    top: 20px;
-    width: 34px;
-    height: 32px;
+    left: 26px;
+    top: 10px;
+    width: 60px;
+    height: 56px;
     background: url('game/ui-theme/title-flower.png') center / contain no-repeat;
     opacity: 0.56;
   }
@@ -224,8 +226,8 @@ $muted: #8fa4ce;
   &::after {
     content: attr(data-sub-name);
     position: absolute;
-    left: 72px;
-    top: 40px;
+    left: 104px;
+    top: 48px;
     color: #8fa4ce;
     font-size: 12px;
     letter-spacing: 0.22em;
@@ -252,7 +254,7 @@ $muted: #8fa4ce;
   top: 0;
   color: $text;
   z-index: 2;
-  font-size: 1.05em;
+  font-size: 1.12em;
   letter-spacing: 0.08em;
 }
 

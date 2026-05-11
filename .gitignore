@@ -34,3 +34,6 @@ packages/webgal/public/game/figure/**/*
 packages/webgal/public/lib/**/*
 
 plan/
+
+.claude/
+CLAUDE.md
