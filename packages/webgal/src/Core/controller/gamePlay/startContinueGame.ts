@@ -10,6 +10,7 @@ import { restorePerform } from '@/Core/controller/storage/jumpFromBacklog';
 
 import { hasFastSaveRecord, loadFastSaveGame } from '@/Core/controller/storage/fastSaveLoad';
 import { WebGAL } from '@/Core/WebGAL';
+import { handleChapterEnter } from '@/Core/controller/gamePlay/chapterProgress';
 
 /**
  * 从头开始游戏
@@ -22,6 +23,8 @@ export const startGame = () => {
   // 场景写入到运行时
   sceneFetcher(sceneUrl).then((rawScene) => {
     WebGAL.sceneManager.sceneData.currentScene = sceneParser(rawScene, 'start.txt', sceneUrl);
+    WebGAL.sceneManager.sceneData.currentSentenceId = 0;
+    handleChapterEnter('start.txt');
     // 开始第一条语句
     nextSentence();
   });

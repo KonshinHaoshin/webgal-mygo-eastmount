@@ -274,6 +274,19 @@ export default function Title() {
             <section className={styles.Title_brand}>
               <div className={styles.Title_brand_jp}>未做之事</div>
               <div className={styles.Title_brand_en}>When Lilies Fall in Silence</div>
+              {currentChapter && (
+                <div className={styles.Title_current_bookmark} aria-label={`当前章节 ${currentChapter.no} ${currentChapter.title}`}>
+                  <span className={styles.Title_current_ribbon} />
+                  <div className={styles.Title_current_bookmark_inner}>
+                    <span className={styles.Title_current_kicker}>CURRENT CHAPTER</span>
+                    <span className={styles.Title_current_no}>{currentChapter.no}</span>
+                    <span className={styles.Title_current_rule} />
+                    <span className={styles.Title_current_name}>{currentChapter.title}</span>
+                    <span className={styles.Title_current_en}>{currentChapter.titleEn}</span>
+                    <span className={styles.Title_current_summary}>{currentChapter.summary ?? ''}</span>
+                  </div>
+                </div>
+              )}
             </section>
           )}
           {titleView === 'menu' && (
@@ -307,13 +320,6 @@ export default function Title() {
           )}
           {chapters.length > 0 && currentChapter && (
             <>
-              {/* {titleView === 'menu' && (
-                <aside className={styles.Title_chapter_status}>
-                  <span>当前章节</span>
-                  <strong>{currentChapter.no}</strong>
-                  <small>{currentChapter.title}</small>
-                </aside>
-              )} */}
               {titleView === 'chapters' && (
                 <section
                   className={`${styles.Title_chapter_select} ${styles.Title_chapter_select_page}`}

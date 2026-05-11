@@ -12,6 +12,7 @@ import Menu from '@/UI/Menu/Menu';
 import GlobalDialog from '@/UI/GlobalDialog/GlobalDialog';
 import PanicOverlay from '@/UI/PanicOverlay/PanicOverlay';
 import DevPanel from '@/UI/DevPanel/DevPanel';
+import ChapterToast from '@/UI/ChapterToast/ChapterToast';
 import { WebGAL } from './Core/WebGAL';
 
 export default function App() {
@@ -73,6 +74,7 @@ export default function App() {
       <Backlog />
       <Title />
       <Logo />
+      <ChapterToast />
       <Extra />
       <Menu />
       <GlobalDialog />

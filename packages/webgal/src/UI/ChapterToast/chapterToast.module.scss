@@ -1,0 +1,64 @@
+.ChapterToast {
+  position: absolute;
+  left: 3.8rem;
+  top: 3.2rem;
+  z-index: 12;
+  min-width: 20rem;
+  padding: 1.25rem 1.6rem 1.1rem;
+  border-left: 1px solid rgba(230, 237, 247, 0.58);
+  border-bottom: 1px solid rgba(168, 190, 219, 0.28);
+  background:
+    linear-gradient(90deg, rgba(27, 36, 59, 0.78), rgba(12, 19, 34, 0.2)),
+    linear-gradient(180deg, rgba(230, 237, 247, 0.08), transparent);
+  color: #e6edf7;
+  font-family: 'JiangChengYuanTi', '思源宋体', serif;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateX(-1.2rem);
+  filter: drop-shadow(0 0.8rem 1.2rem rgba(4, 8, 18, 0.34));
+  transition: opacity 0.36s ease, transform 0.36s ease;
+}
+
+.ChapterToast_visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.ChapterToast_kicker {
+  font-size: 0.95rem;
+  letter-spacing: 0.24em;
+  color: #8fa4ce;
+}
+
+.ChapterToast_body {
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+  margin-top: 0.55rem;
+
+  span {
+    font-size: 2.4rem;
+    line-height: 1;
+    color: #a8bedb;
+  }
+
+  strong {
+    font-size: 1.7rem;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+  }
+}
+
+.ChapterToast_sub {
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+  letter-spacing: 0.12em;
+  color: #a8bedb;
+}
+
+.ChapterToast_save {
+  margin-top: 0.75rem;
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  color: rgba(230, 237, 247, 0.72);
+}

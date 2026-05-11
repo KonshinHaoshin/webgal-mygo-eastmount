@@ -24,6 +24,8 @@
   right: 7.5rem;
   top: 8.5rem;
   z-index: 2;
+  width: 44rem;
+  text-align: right;
 
   &::after {
     content: '';
@@ -38,19 +40,137 @@
 }
 
 .Title_brand_jp {
+  position: relative;
   font-size: 6.2rem;
   line-height: 1;
   letter-spacing: 0.08em;
   color: #e6edf7;
   text-shadow: 0 0 22px rgba(168, 190, 219, 0.55), 0 0 2px rgba(230, 237, 247, 0.85);
+  z-index: 999;
+
 }
 
 .Title_brand_en {
+  position: relative;
   margin-top: 2rem;
   padding-left: 5rem;
   font-size: 1.45rem;
   letter-spacing: 0.28em;
   color: #a8bedb;
+  z-index: 999;
+}
+
+.Title_current_bookmark {
+  position: absolute;
+  width: 16.5rem;
+  right: 5rem;
+  top: 13.5rem;
+  height: 40rem;
+  margin: 0;
+  color: #203051;
+  filter: drop-shadow(0 1.2rem 1.4rem rgba(4, 8, 18, 0.34));
+  z-index: 998;
+}
+
+.Title_current_ribbon {
+  position: absolute;
+  left: 50%;
+  top: -3.2rem;
+  width: 2.8rem;
+  height: 7rem;
+  transform: translateX(-50%);
+  background:
+    linear-gradient(90deg, rgba(230, 237, 247, 0.2), transparent 26%, transparent 74%, rgba(230, 237, 247, 0.18)),
+    linear-gradient(180deg, rgba(73, 92, 136, 0.96), rgba(18, 30, 58, 0.78));
+  clip-path: polygon(0 0, 42% 0, 50% 74%, 58% 0, 100% 0, 76% 78%, 50% 100%, 24% 78%);
+  z-index: 2;
+}
+
+.Title_current_bookmark_inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3.2rem 1.2rem 2rem;
+  clip-path: polygon(7% 6%, 50% 0, 93% 6%, 93% 94%, 50% 100%, 7% 94%);
+  background:
+    radial-gradient(circle at 50% 72%, rgba(255, 255, 255, 0.38), transparent 34%),
+    linear-gradient(180deg, rgba(230, 237, 247, 0.88), rgba(168, 190, 219, 0.62));
+  box-shadow: inset 0 0 2.1rem rgba(255, 255, 255, 0.26), inset 0 0 0 1px rgba(230, 237, 247, 0.42);
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 8.8rem 0 6rem;
+    background:
+      radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.28), transparent 18%),
+      radial-gradient(circle at 30% 66%, rgba(108, 127, 168, 0.16), transparent 28%),
+      linear-gradient(180deg, transparent, rgba(108, 127, 168, 0.13));
+  }
+
+  > span {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+.Title_current_kicker {
+  font-size: 0.85rem;
+  letter-spacing: 0.22em;
+  color: #526996;
+}
+
+.Title_current_no {
+  margin-top: 0.8rem;
+  font-size: 4rem;
+  line-height: 1;
+  color: #142142;
+  text-shadow: 0 0 0.7rem rgba(255, 255, 255, 0.62);
+}
+
+.Title_current_rule {
+  position: relative;
+  width: 68%;
+  height: 1px;
+  margin-top: 1.1rem;
+  background: linear-gradient(90deg, transparent, rgba(82, 105, 150, 0.5), transparent);
+
+  &::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    top: -0.2rem;
+    width: 0.4rem;
+    height: 0.4rem;
+    transform: translateX(-50%) rotate(45deg);
+    background: #d8e5ff;
+  }
+}
+
+.Title_current_name {
+  margin-top: 2.2rem;
+  font-size: 2rem;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+}
+
+.Title_current_en {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  line-height: 1.35;
+  letter-spacing: 0.08em;
+  color: #526996;
+}
+
+.Title_current_summary {
+  margin-top: auto;
+  min-height: 2.6rem;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  letter-spacing: 0.06em;
+  color: rgba(58, 78, 118, 0.72);
 }
 
 .Title_buttonList {
@@ -144,37 +264,6 @@
   background: linear-gradient(180deg, rgba(27, 36, 59, 0.66), rgba(12, 19, 34, 0.36));
   box-shadow: inset 0 0 24px rgba(168, 190, 219, 0.08), 0 0 22px rgba(12, 19, 34, 0.34);
   backdrop-filter: blur(4px);
-}
-
-.Title_chapter_status {
-  position: absolute;
-  z-index: 4;
-  right: 7.4rem;
-  top: 5.8rem;
-  display: flex;
-  align-items: baseline;
-  gap: 0.9rem;
-  padding-bottom: 0.6rem;
-  border-bottom: 1px solid rgba(168, 190, 219, 0.38);
-  color: #d8e5ff;
-  text-shadow: 0 0 10px rgba(12, 19, 34, 0.9);
-
-  span {
-    font-size: 1.05rem;
-    letter-spacing: 0.16em;
-    color: #8fa4ce;
-  }
-
-  strong {
-    font-size: 2.25rem;
-    font-weight: 400;
-    letter-spacing: 0.05em;
-  }
-
-  small {
-    font-size: 1.2rem;
-    letter-spacing: 0.08em;
-  }
 }
 
 .Title_chapter_select {

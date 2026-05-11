@@ -4,6 +4,7 @@ import { logger } from '../../util/logger';
 import { nextSentence } from '@/Core/controller/gamePlay/nextSentence';
 import uniqWith from 'lodash/uniqWith';
 import { scenePrefetcher } from '@/Core/util/prefetcher/scenePrefetcher';
+import { handleChapterEnter } from '@/Core/controller/gamePlay/chapterProgress';
 
 import { WebGAL } from '@/Core/WebGAL';
 
@@ -29,6 +30,7 @@ export const changeScene = (sceneUrl: string, sceneName: string) => {
       scenePrefetcher(subSceneListUniq);
       logger.debug('现在切换场景，切换后的结果：', WebGAL.sceneManager.sceneData);
       WebGAL.sceneManager.lockSceneWrite = false;
+      handleChapterEnter(sceneName);
       nextSentence();
     })
     .catch((e) => {
