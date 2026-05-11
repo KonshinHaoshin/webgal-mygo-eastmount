@@ -256,7 +256,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
                   data-sub-name={getNameSubLabel(showNameText)}
                   style={{
                     opacity: `${textboxOpacity / 100}`,
-                    fontSize: '160%',
+                    fontSize: '220%',
                   }}
                 >
                   <span style={{ opacity: 0 }}>{nameElementList}</span>
@@ -265,7 +265,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
                   className={applyStyle('TextBox_showName', styles.TextBox_showName)}
                   data-sub-name={getNameSubLabel(showNameText)}
                   style={{
-                    fontSize: '160%',
+                    fontSize: '220%',
                   }}
                 >
                   {nameElementList}
