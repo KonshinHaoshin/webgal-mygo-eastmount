@@ -35,13 +35,13 @@ $muted: #8fa4ce;
 .TextBox_main {
   z-index: 3;
   position: absolute;
-  left: 390px;
-  right: 140px;
-  bottom: 78px;
-  min-height: 228px;
-  max-height: 228px;
+  left: 54px;
+  right: 54px;
+  bottom: 54px;
+  min-height: 220px;
+  max-height: 220px;
   box-sizing: border-box;
-  padding: 86px 170px 48px 104px;
+  padding: 92px 170px 42px 142px;
   display: flex;
   flex-flow: column;
   align-items: flex-start;
@@ -66,8 +66,8 @@ $muted: #8fa4ce;
 }
 
 .TextBox_main_miniavatarOff {
-  left: 390px;
-  padding-left: 104px;
+  left: 54px;
+  padding-left: 142px;
 }
 
 @keyframes autoBlink {
@@ -82,8 +82,8 @@ $muted: #8fa4ce;
   border: 1px solid $line;
   border-radius: 0;
   background:
-    linear-gradient(180deg, rgba(27, 36, 59, 0.34), rgba(12, 19, 34, 0.56)),
-    linear-gradient(90deg, rgba(168, 190, 219, 0.05), transparent 30%, rgba(168, 190, 219, 0.04));
+    linear-gradient(180deg, rgba(27, 36, 59, 0.28), rgba(12, 19, 34, 0.5)),
+    radial-gradient(circle at 93% 70%, rgba(168, 190, 219, 0.08), transparent 18%);
   box-shadow:
     inset 0 0 0 1px rgba(230, 237, 247, 0.025),
     inset 0 0 28px rgba(168, 190, 219, 0.05),
@@ -101,18 +101,17 @@ $muted: #8fa4ce;
   &::before {
     left: 18px;
     right: 18px;
-    top: 16px;
-    bottom: 16px;
-    border-top: 1px solid rgba(168, 190, 219, 0.13);
-    border-bottom: 1px solid rgba(168, 190, 219, 0.13);
+    top: 18px;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(168, 190, 219, 0.22), rgba(168, 190, 219, 0.06) 32%, transparent);
   }
 
   &::after {
-    right: 48px;
-    bottom: 36px;
-    width: 135px;
-    height: 96px;
-    background: url('game/template/assets/theme/textbox-flower.png') center / contain no-repeat;
+    right: 34px;
+    bottom: 18px;
+    width: 152px;
+    height: 118px;
+    background: url('game/ui-theme/textbox-flower.png') center / contain no-repeat;
     opacity: 0.34;
   }
 
@@ -128,8 +127,8 @@ $muted: #8fa4ce;
 
   &[data-waiting='true']::after {
     background:
-      url('game/template/assets/theme/butterfly-wait.png') right bottom / 46px 41px no-repeat,
-      url('game/template/assets/theme/textbox-flower.png') center / contain no-repeat;
+      url('game/ui-theme/butterfly-wait.png') right bottom / 54px 48px no-repeat,
+      url('game/ui-theme/textbox-flower.png') center / contain no-repeat;
     animation: waitingButterfly 1.15s ease-in-out infinite;
   }
 }
@@ -199,14 +198,15 @@ $muted: #8fa4ce;
 
 .TextBox_showName {
   position: absolute;
-  left: 38px;
-  top: -64px;
+  left: 76px;
+  top: 12px;
   z-index: 4;
-  min-width: 300px;
+  min-width: 250px;
   height: 70px;
-  padding: 13px 58px 10px 86px;
+  padding: 10px 48px 10px 72px;
   box-sizing: border-box;
-  border: 1px solid $line;
+  border: 0;
+  border-bottom: 1px solid rgba(168, 190, 219, 0.18);
   color: $text;
   overflow: hidden;
 
@@ -215,17 +215,29 @@ $muted: #8fa4ce;
     position: absolute;
     left: 30px;
     top: 20px;
-    width: 32px;
-    height: 26px;
-    background: url('game/template/assets/theme/title-flower.png') center / contain no-repeat;
+    width: 34px;
+    height: 32px;
+    background: url('game/ui-theme/title-flower.png') center / contain no-repeat;
     opacity: 0.56;
+  }
+
+  &::after {
+    content: attr(data-sub-name);
+    position: absolute;
+    left: 72px;
+    top: 40px;
+    color: #8fa4ce;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    line-height: 1;
+    opacity: 0.9;
   }
 }
 
 .TextBox_ShowName_Background {
   z-index: 3;
-  background: linear-gradient(90deg, rgba(27, 36, 59, 0.46), rgba(12, 19, 34, 0.22));
-  box-shadow: inset 0 0 18px rgba(168, 190, 219, 0.05);
+  background: transparent;
+  box-shadow: none;
 }
 
 .nameContainer {
@@ -240,14 +252,15 @@ $muted: #8fa4ce;
   top: 0;
   color: $text;
   z-index: 2;
-  letter-spacing: 0.12em;
+  font-size: 1.05em;
+  letter-spacing: 0.08em;
 }
 
 .innerName {
   position: absolute;
   left: 0;
   top: 0;
-  -webkit-text-stroke: 0.05em rgba(5, 10, 24, 0.72);
+  -webkit-text-stroke: 0.035em rgba(5, 10, 24, 0.58);
   z-index: 1;
 }
 
@@ -270,9 +283,9 @@ $muted: #8fa4ce;
 }
 
 .text {
-  max-width: calc(100% - 30px);
+  max-width: calc(100% - 120px);
   overflow: hidden;
   color: $text;
-  line-height: 1.78 !important;
+  line-height: 1.7 !important;
   text-shadow: 0 2px 6px rgba(5, 10, 24, 0.72);
 }

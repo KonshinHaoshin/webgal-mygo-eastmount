@@ -42,6 +42,7 @@ export const TextPreview = (props: any) => {
     textDelay: textDelay,
     isHasName: isHasName,
     showName: showNameArray,
+    showNameText,
     currentConcatDialogPrev: '',
     fontSize: size,
     currentDialogKey: String(previewKey),

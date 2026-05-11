@@ -22,6 +22,7 @@ export default function IMSSTextbox(props: ITextboxProps) {
     miniAvatar,
     isHasName,
     showName,
+    showNameText,
     font,
     textDuration,
     isUseStroke,
@@ -252,17 +253,19 @@ export default function IMSSTextbox(props: ITextboxProps) {
                     ' ' +
                     applyStyle('TextBox_ShowName_Background', styles.TextBox_ShowName_Background)
                   }
+                  data-sub-name={getNameSubLabel(showNameText)}
                   style={{
                     opacity: `${textboxOpacity / 100}`,
-                    fontSize: '150%',
+                    fontSize: '132%',
                   }}
                 >
                   <span style={{ opacity: 0 }}>{nameElementList}</span>
                 </div>
                 <div
                   className={applyStyle('TextBox_showName', styles.TextBox_showName)}
+                  data-sub-name={getNameSubLabel(showNameText)}
                   style={{
-                    fontSize: '150%',
+                    fontSize: '132%',
                   }}
                 >
                   {nameElementList}
@@ -286,4 +289,23 @@ export default function IMSSTextbox(props: ITextboxProps) {
       )}
     </>
   );
+}
+
+function getNameSubLabel(name: string): string {
+  const normalized = name.trim();
+  const nameMap: Record<string, string> = {
+    白羽: 'BAIYU',
+    千早爱音: 'CHIHAYA ANON',
+    千早愛音: 'CHIHAYA ANON',
+    高松灯: 'TAKAMATSU TOMORI',
+    高松燈: 'TAKAMATSU TOMORI',
+    长崎素世: 'NAGASAKI SOYO',
+    長崎素世: 'NAGASAKI SOYO',
+    要乐奈: 'KANAME RANA',
+    要樂奈: 'KANAME RANA',
+    椎名立希: 'SHIINA TAKI',
+  };
+  if (nameMap[normalized]) return nameMap[normalized];
+  if (/^[\w\s'-]+$/.test(normalized)) return normalized.toUpperCase();
+  return 'NAME';
 }

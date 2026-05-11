@@ -91,6 +91,7 @@ export const TextBox = () => {
       isText={isText}
       textDelay={textDelay}
       showName={showName}
+      showNameText={stageState.showName}
       isHasName={isHasName}
       currentConcatDialogPrev={currentConcatDialogPrev}
       fontSize={size}

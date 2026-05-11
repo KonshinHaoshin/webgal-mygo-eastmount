@@ -14,7 +14,6 @@ import PixiStage from '@/Core/controller/stage/pixi/PixiController';
 import axios from 'axios';
 import { __INFO } from '@/config/info';
 import { WebGAL } from '@/Core/WebGAL';
-import { loadTemplate } from '@/Core/util/coreInitialFunction/templateLoader';
 import { useIsWaiting } from './controller/gamePlay/isWaiting';
 
 const u = navigator.userAgent;
@@ -34,8 +33,7 @@ export const initializeScript = async (): Promise<void> => {
   loadingTextElement = document.getElementById('title-enter__loading-text');
   console.log(loadingTextElement);
 
-  setLoadingText('Loading template');
-  await loadTemplate();
+  setLoadingText('Loading theme');
   // 激活强制缩放
   // 在调整窗口大小时重新计算宽高，设计稿按照 1600*900。
   if (isIOS) {
