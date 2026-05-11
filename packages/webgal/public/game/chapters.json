@@ -1,0 +1,42 @@
+[
+  {
+    "id": "ch1",
+    "no": "01",
+    "title": "初遇",
+    "titleEn": "The First Meeting",
+    "summary": "窗边的花影与第一封未寄出的信。",
+    "scene": "start.txt"
+  },
+  {
+    "id": "ch2",
+    "no": "02",
+    "title": "欧耶爱爱的祥",
+    "titleEn": "Wavering Emotions",
+    "summary": "尚未开放",
+    "locked": true
+  },
+  {
+    "id": "ch3",
+    "no": "03",
+    "title": "欧耶爱爱的祥",
+    "titleEn": "Unsent Letters",
+    "summary": "尚未开放",
+    "locked": true
+  },
+  {
+    "id": "ch4",
+    "no": "04",
+    "title": "欧耶爱爱的祥",
+    "titleEn": "Under the Rain",
+    "summary": "尚未开放",
+    "locked": true
+  },
+  {
+    "id": "ch5",
+    "no": "05",
+    "title": "欧耶爱爱的祥",
+    "titleEn": "Blooming Tomorrow",
+    "summary": "尚未开放",
+    "locked": true
+  }
+]
