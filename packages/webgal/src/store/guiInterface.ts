@@ -22,6 +22,9 @@ export interface IGuiState {
   showBacklog: boolean;
   titleBgm: string; // 标题背景音乐
   titleBg: string; // 标题背景图片
+  titleBrandJp: string; // 标题主文字（中/日文）
+  titleBrandEn: string; // 标题副文字（英文）
+  titlePoem: string; // 标题诗歌文字
   logoImage: string[];
   showExtra: boolean;
   showGlobalDialog: boolean;
@@ -34,10 +37,10 @@ export interface IGuiState {
 
 export type componentsVisibility = Pick<
   IGuiState,
-  Exclude<keyof IGuiState, 'currentMenuTag' | 'titleBg' | 'titleBgm' | 'logoImage' | 'theme' | 'fontOptions'>
+  Exclude<keyof IGuiState, 'currentMenuTag' | 'titleBg' | 'titleBgm' | 'titleBrandJp' | 'titleBrandEn' | 'titlePoem' | 'logoImage' | 'theme' | 'fontOptions'>
 >;
 // 标题资源
-export type GuiAsset = Pick<IGuiState, 'titleBgm' | 'titleBg'>;
+export type GuiAsset = Pick<IGuiState, 'titleBgm' | 'titleBg' | 'titleBrandJp' | 'titleBrandEn' | 'titlePoem'>;
 
 export interface IGuiStore {
   GuiState: IGuiState;

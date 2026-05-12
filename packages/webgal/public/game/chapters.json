@@ -12,31 +12,35 @@
     "no": "02",
     "title": "欧耶爱爱的祥",
     "titleEn": "Wavering Emotions",
-    "summary": "尚未开放",
-    "locked": true
+    "summary": "测试章节 02：用于验证进入章节提示与自动存档。",
+    "scene": "chapter-02-test.txt",
+    "locked": false
   },
   {
     "id": "ch3",
     "no": "03",
     "title": "欧耶爱爱的祥",
     "titleEn": "Unsent Letters",
-    "summary": "尚未开放",
-    "locked": true
+    "summary": "测试章节 03：用于验证章节切换。",
+    "scene": "chapter-03-test.txt",
+    "locked": false
   },
   {
     "id": "ch4",
     "no": "04",
     "title": "欧耶爱爱的祥",
     "titleEn": "Under the Rain",
-    "summary": "尚未开放",
-    "locked": true
+    "summary": "测试章节 04：用于验证左上角提示。",
+    "scene": "chapter-04-test.txt",
+    "locked": false
   },
   {
     "id": "ch5",
     "no": "05",
     "title": "欧耶爱爱的祥",
     "titleEn": "Blooming Tomorrow",
-    "summary": "尚未开放",
-    "locked": true
+    "summary": "测试章节 05：用于验证自动快速存档。",
+    "scene": "chapter-05-test.txt",
+    "locked": false
   }
 ]

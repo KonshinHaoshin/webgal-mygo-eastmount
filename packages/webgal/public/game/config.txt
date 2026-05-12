@@ -11,3 +11,6 @@ Positioning_Type:M_3_1_0;
 Stage_Width:2560;
 Stage_Height:1440;
 Auto_Rotate:true;
+Title_brand_jp:未做之事;
+Title_brand_en:When Lilies Fall in Silence;
+Title_poem:仙人抚我顶，结发受长生。;

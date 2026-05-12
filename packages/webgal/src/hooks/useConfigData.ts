@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 const useConfigData = () => {
-  const _map = ['Title_img', 'Game_Logo', 'Title_bgm', 'Game_name', 'Game_key'];
+  const _map = ['Title_img', 'Game_Logo', 'Title_bgm', 'Game_name', 'Game_key', 'Title_brand_jp', 'Title_brand_en', 'Title_poem'];
   const configData = useSelector((state: RootState) => state.userData.globalGameVar);
   return useEffect(() => {
     // configData发生变化
@@ -52,9 +52,24 @@ const useConfigData = () => {
           getSavesFromStorage(0, 0);
           break;
         }
+
+        case 'Title_brand_jp': {
+          webgalStore.dispatch(setGuiAsset({ asset: 'titleBrandJp', value: val }));
+          break;
+        }
+
+        case 'Title_brand_en': {
+          webgalStore.dispatch(setGuiAsset({ asset: 'titleBrandEn', value: val }));
+          break;
+        }
+
+        case 'Title_poem': {
+          webgalStore.dispatch(setGuiAsset({ asset: 'titlePoem', value: val }));
+          break;
+        }
       }
     }
     return () => {};
-  }, [configData.Game_Logo, configData.Game_key, configData.Game_name, configData.Title_bgm, configData.Title_img]);
+  }, [configData.Game_Logo, configData.Game_key, configData.Game_name, configData.Title_bgm, configData.Title_img, configData.Title_brand_jp, configData.Title_brand_en, configData.Title_poem]);
 };
 export default useConfigData;

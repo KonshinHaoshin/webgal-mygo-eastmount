@@ -272,8 +272,8 @@ export default function Title() {
           <div className={styles.Title_overlay} />
           {titleView === 'menu' && (
             <section className={styles.Title_brand}>
-              <div className={styles.Title_brand_jp}>未做之事</div>
-              <div className={styles.Title_brand_en}>When Lilies Fall in Silence</div>
+              <div className={styles.Title_brand_jp}>{GUIState.titleBrandJp || '未做之事'}</div>
+              <div className={styles.Title_brand_en}>{GUIState.titleBrandEn || 'When Lilies Fall in Silence'}</div>
               {currentChapter && (
                 <div className={styles.Title_current_bookmark} aria-label={`当前章节 ${currentChapter.no} ${currentChapter.title}`}>
                   <span className={styles.Title_current_ribbon} />
@@ -389,7 +389,7 @@ export default function Title() {
           {titleView === 'menu' && (
             <>
               <div className={styles.Title_poem}>
-                <p>仙人抚我顶，结发受长生。</p>
+                <p>{GUIState.titlePoem || '仙人抚我顶，结发受长生。'}</p>
               </div>
               <div className={styles.Title_shortcuts}>
                 {shortcutItems.map((item) => (
